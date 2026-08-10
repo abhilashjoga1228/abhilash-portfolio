@@ -2,182 +2,402 @@
 
 import { motion } from "framer-motion";
 
-export default function AnimatedBackground() {
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
 
+const nodes = [
 
-      {/* Subtle Grid */}
-      <div
-        className="
-        absolute inset-0
-        bg-[linear-gradient(rgba(59,130,246,0.025)_1px,transparent_1px),
-        linear-gradient(90deg,rgba(59,130,246,0.025)_1px,transparent_1px)]
-        bg-[size:80px_80px]
-        "
-      />
+{
+name:"Swire Coca-Cola",
+logo:"/Logos/swire.jpg",
+position:"top-[10%] left-[8%]",
+size:"h-16 w-16"
+},
 
+{
+name:"Microsoft Fabric",
+logo:"/Logos/fabric.png",
+position:"top-[12%] left-[42%]",
+size:"h-16 w-16"
+},
 
+{
+name:"SQL",
+logo:"/Logos/sql.png",
+position:"top-[25%] right-[40%]",
+size:"h-12 w-12"
+},
 
-      {/* Main AI Glow */}
-      <motion.div
+{
+name:"Azure",
+logo:"/Logos/azure.png",
+position:"top-[35%] left-[12%]",
+size:"h-14 w-14"
+},
 
-        animate={{
-          scale:[1,1.2,1],
-          opacity:[0.25,0.45,0.25]
-        }}
+{
+name:"Databricks",
+logo:"/Logos/databricks.png",
+position:"top-[22%] right-[20%]",
+size:"h-14 w-14"
+},
 
-        transition={{
-          duration:10,
-          repeat:Infinity,
-          ease:"easeInOut"
-        }}
+{
+name:"Adobe",
+logo:"/Logos/adobe.png",
+position:"top-[55%] right-[12%]",
+size:"h-16 w-16"
+},
 
-        className="
-        absolute
-        left-1/2
-        top-1/2
-        h-[600px]
-        w-[600px]
-        -translate-x-1/2
-        -translate-y-1/2
-        rounded-full
-        bg-blue-600/20
-        blur-[150px]
-        "
-      />
+{
+name:"Amazon",
+logo:"/Logos/amazon.png",
+position:"bottom-[28%] left-[5%]",
+size:"h-16 w-16"
+},
 
+{
+name:"Snowflake",
+logo:"/Logos/snowflake.png",
+position:"bottom-[5%] left-[28%]",
+size:"h-14 w-14"
+},
 
+{
+name:"Power BI",
+logo:"/Logos/powerbi.png",
+position:"top-[15%] right-[28%]",
+size:"h-16 w-16"
+},
 
+{
+name:"Power Platform",
+logo:"/Logos/powerplatform.png",
+position:"bottom-[12%] left-[48%]",
+size:"h-14 w-14"
+},
 
+{
+name:"Python",
+logo:"/Logos/python.png",
+position:"bottom-[15%] left-[12%]",
+size:"h-12 w-12"
+},
 
-      {/* Secondary Purple Glow */}
+{
+name:"SAP",
+logo:"/Logos/sap.png",
+position:"bottom-[10%] right-[22%]",
+size:"h-14 w-14"
+}
 
-      <motion.div
-
-        animate={{
-          x:[0,80,0],
-          y:[0,-50,0]
-        }}
-
-        transition={{
-          duration:15,
-          repeat:Infinity
-        }}
-
-        className="
-        absolute
-        right-20
-        top-32
-        h-72
-        w-72
-        rounded-full
-        bg-purple-600/10
-        blur-[120px]
-        "
-      />
-
-
-
-
-
-      {/* Data Flow Lines */}
-
-      <motion.div
-
-        animate={{
-          opacity:[0.1,0.5,0.1]
-        }}
-
-        transition={{
-          duration:6,
-          repeat:Infinity
-        }}
-
-        className="
-        absolute
-        left-1/2
-        top-1/2
-        h-[500px]
-        w-[500px]
-        -translate-x-1/2
-        -translate-y-1/2
-        rounded-full
-        border
-        border-blue-400/10
-        "
-      />
+];
 
 
 
-      <motion.div
+const particles = [
 
-        animate={{
-          rotate:360
-        }}
+[10,20],
+[25,70],
+[40,35],
+[55,80],
+[70,25],
+[85,60],
+[15,90],
+[35,10],
+[60,50],
+[90,30],
+[45,75],
+[75,85],
+[20,45],
+[65,15],
+[95,75],
+[30,55],
+[80,40],
+[50,90],
+[12,65],
+[88,15]
 
-        transition={{
-          duration:40,
-          repeat:Infinity,
-          ease:"linear"
-        }}
-
-        className="
-        absolute
-        left-1/2
-        top-1/2
-        h-[350px]
-        w-[350px]
-        -translate-x-1/2
-        -translate-y-1/2
-        rounded-full
-        border
-        border-purple-400/10
-        "
-      />
-
+];
 
 
 
+export default function AnimatedBackground(){
 
-      {/* Floating Particles */}
 
-      {[1,2,3,4,5].map((item)=>(
+return (
 
-        <motion.div
+<div
 
-        key={item}
+className="
+absolute
+inset-0
+overflow-hidden
+"
 
-        animate={{
-          y:[0,-80,0],
-          opacity:[0.2,1,0.2]
-        }}
+>
 
-        transition={{
-          duration:8+item,
-          repeat:Infinity,
-          delay:item
-        }}
 
-        className="
-        absolute
-        h-2
-        w-2
-        rounded-full
-        bg-blue-400
-        "
+{/* Background Grid */}
 
-        style={{
-          left:`${15+item*15}%`,
-          top:`${20+item*10}%`
-        }}
+<div
 
-        />
+className="
+absolute
+inset-0
+bg-[linear-gradient(rgba(59,130,246,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.025)_1px,transparent_1px)]
+bg-[size:80px_80px]
+"
 
-      ))}
+/>
 
 
 
-    </div>
-  );
+
+
+{/* Main AI/Data Glow */}
+
+<motion.div
+
+animate={{
+
+scale:[
+1,
+1.15,
+1
+],
+
+opacity:[
+0.2,
+0.4,
+0.2
+]
+
+}}
+
+transition={{
+
+duration:12,
+
+repeat:Infinity,
+
+ease:"easeInOut"
+
+}}
+
+className="
+absolute
+left-1/2
+top-1/2
+h-[600px]
+w-[600px]
+-translate-x-1/2
+-translate-y-1/2
+rounded-full
+bg-blue-600/20
+blur-[160px]
+"
+
+/>
+
+
+
+
+
+
+{/* Floating Technology Logos */}
+
+{
+
+nodes.map((node,index)=>(
+
+
+<motion.div
+
+key={node.name}
+
+animate={{
+
+y:[
+0,
+-25,
+0
+],
+
+x:[
+0,
+12,
+0
+],
+
+scale:[
+1,
+1.08,
+1
+],
+
+opacity:[
+0.6,
+1,
+0.6
+]
+
+}}
+
+transition={{
+
+duration:7+(index%5),
+
+repeat:Infinity,
+
+delay:index*0.3,
+
+ease:"easeInOut"
+
+}}
+
+className={`
+absolute
+${node.position}
+group
+flex
+flex-col
+items-center
+gap-2
+`}
+
+>
+
+
+
+<div
+
+className="
+rounded-2xl
+border
+border-blue-400/30
+bg-slate-950/80
+p-4
+backdrop-blur-xl
+shadow-[0_0_35px_rgba(59,130,246,0.35)]
+"
+
+>
+
+
+<img
+
+src={node.logo}
+
+alt={node.name}
+
+className={`
+${node.size}
+rounded-xl
+object-contain
+`}
+
+/>
+
+
+</div>
+
+
+
+
+<span
+
+className="
+text-xs
+text-blue-300
+opacity-70
+transition
+group-hover:text-cyan-300
+"
+
+>
+
+{node.name}
+
+</span>
+
+
+</motion.div>
+
+
+))
+
+}
+
+
+
+
+
+
+
+{/* Floating Data Particles */}
+
+{
+
+particles.map((position,index)=>(
+
+
+<motion.div
+
+key={index}
+
+animate={{
+
+y:[
+0,
+-120,
+0
+],
+
+opacity:[
+0.1,
+0.8,
+0.1
+]
+
+}}
+
+transition={{
+
+duration:5+(index%5),
+
+repeat:Infinity,
+
+delay:index*0.2
+
+}}
+
+className="
+absolute
+h-1.5
+w-1.5
+rounded-full
+bg-cyan-400
+"
+
+style={{
+
+left:`${position[0]}%`,
+
+top:`${position[1]}%`
+
+}}
+
+/>
+
+
+))
+
+}
+
+
+
+</div>
+
+
+);
+
 }

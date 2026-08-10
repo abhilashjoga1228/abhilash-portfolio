@@ -1,5 +1,6 @@
-export default function Projects() {
+"use client";
 
+export default function Projects() {
 
 const projects = [
 
@@ -13,55 +14,38 @@ title:"Delivery Standardization & Cost Optimization Platform",
 description:
 "Enterprise analytics platform designed to identify delivery inefficiencies, optimize delivery frequency, reduce operational costs, and improve logistics performance.",
 
-
 architecture:[
-
 "Operational Data",
-
 "Python Data Pipeline",
-
 "Microsoft Fabric Lakehouse",
-
 "Semantic Model",
-
 "Power BI Analytics"
-
 ],
-
 
 technologies:[
-
 "Microsoft Fabric",
-
 "Power BI",
-
 "Python",
-
 "SQL",
-
 "Data Modeling"
-
 ],
 
-
 impact:[
-
 "Operational KPI monitoring",
-
 "Cost-to-serve analysis",
-
 "Delivery frequency optimization",
-
 "Driver productivity insights"
+],
 
-]
+caseStudy:"/projects/delivery-standardization",
+
+github:
+"https://github.com/abhilashjoga1228/Delivery-Standardization-Cost-Optimization-Platform"
 
 },
 
 
-
 {
-
 category:"CLOUD DATA PLATFORM",
 
 title:"Enterprise Lakehouse & Analytics Platform",
@@ -69,55 +53,33 @@ title:"Enterprise Lakehouse & Analytics Platform",
 description:
 "Modern cloud data architecture integrating enterprise sources into scalable analytics platforms.",
 
-
 architecture:[
-
 "Source Systems",
-
 "ETL / ELT",
-
 "Lakehouse",
-
 "Warehouse",
-
 "BI Layer"
-
 ],
-
 
 technologies:[
-
 "Azure Data Factory",
-
 "Databricks",
-
 "Snowflake",
-
 "Azure Synapse",
-
 "SQL"
-
 ],
 
-
 impact:[
-
 "Scalable data pipelines",
-
 "Improved data availability",
-
 "Optimized analytical workloads",
-
 "Enterprise reporting enablement"
-
 ]
 
 },
 
 
-
 {
-
 category:"AI / ANALYTICS",
 
 title:"AI Powered Analytics Assistant",
@@ -125,53 +87,32 @@ title:"AI Powered Analytics Assistant",
 description:
 "AI assistant concept enabling users to interact with enterprise data using natural language.",
 
-
 architecture:[
-
 "Business Question",
-
 "LLM Agent",
-
 "Data Retrieval",
-
 "Analytics Response"
-
 ],
-
 
 technologies:[
-
 "Python",
-
 "LLM",
-
 "RAG",
-
 "Vector Search",
-
 "Power BI"
-
 ],
 
-
 impact:[
-
 "Natural language analytics",
-
 "Automated insights",
-
 "Reduced reporting effort",
-
 "AI driven decision support"
-
 ]
 
 },
 
 
-
 {
-
 category:"BUSINESS INTELLIGENCE",
 
 title:"Executive BI Analytics Platform",
@@ -179,53 +120,31 @@ title:"Executive BI Analytics Platform",
 description:
 "Business intelligence solution providing interactive dashboards, semantic models, and advanced analytics.",
 
-
 architecture:[
-
 "Data Sources",
-
 "SQL Models",
-
 "Semantic Model",
-
 "Power BI Reports"
-
 ],
-
 
 technologies:[
-
 "Power BI",
-
 "DAX",
-
 "Semantic Models",
-
 "SQL",
-
 "Visualization"
-
 ],
 
-
 impact:[
-
 "Executive dashboards",
-
 "KPI tracking",
-
 "Self-service analytics",
-
 "Business reporting automation"
-
 ]
 
 }
 
 ];
-
-
-
 
 
 
@@ -251,7 +170,6 @@ max-w-6xl
 "
 
 >
-
 
 
 <h2
@@ -295,8 +213,6 @@ analytics solutions, and AI applications.
 
 
 
-
-
 <div
 
 className="
@@ -307,7 +223,6 @@ md:grid-cols-2
 "
 
 >
-
 
 
 {
@@ -322,19 +237,12 @@ key={project.title}
 className={`
 
 rounded-3xl
-
 border
-
 bg-slate-900/40
-
 p-8
-
 backdrop-blur-xl
-
 transition
-
 hover:-translate-y-2
-
 
 ${
 project.featured
@@ -352,13 +260,6 @@ project.featured
 `}
 
 >
-
-
-
-
-
-
-{/* Category */}
 
 
 <span
@@ -379,7 +280,6 @@ text-blue-300
 {project.category}
 
 </span>
-
 
 
 
@@ -411,9 +311,6 @@ Featured
 
 
 
-
-
-
 <h3
 
 className="
@@ -432,13 +329,12 @@ text-white
 
 
 
-
 <p
 
 className="
 mt-4
-text-gray-300
 leading-7
+text-gray-300
 "
 
 >
@@ -448,13 +344,6 @@ leading-7
 </p>
 
 
-
-
-
-
-
-
-{/* Architecture */}
 
 
 
@@ -474,13 +363,13 @@ Architecture
 
 
 
+
 <div
 
 className="
 mt-3
 flex
 flex-wrap
-items-center
 gap-2
 "
 
@@ -489,23 +378,12 @@ gap-2
 
 {
 
-project.architecture.map((step,index)=>(
-
-
-<div
-
-key={step}
-
-className="
-flex
-items-center
-gap-2
-"
-
->
+project.architecture.map((step)=>(
 
 
 <span
+
+key={step}
 
 className="
 rounded-lg
@@ -525,46 +403,14 @@ text-gray-300
 </span>
 
 
-
-{
-
-index !== project.architecture.length-1 &&
-
-<span
-
-className="
-text-cyan-400
-"
-
->
-
-→
-
-</span>
-
-}
-
-
-
-</div>
-
-
 ))
 
-
 }
 
 
 </div>
 
 
-
-
-
-
-
-
-{/* Technologies */}
 
 
 
@@ -581,6 +427,7 @@ text-blue-400
 Technology Stack
 
 </h4>
+
 
 
 
@@ -625,7 +472,6 @@ text-blue-300
 
 ))
 
-
 }
 
 
@@ -633,13 +479,6 @@ text-blue-300
 
 
 
-
-
-
-
-
-
-{/* Impact */}
 
 
 
@@ -685,7 +524,6 @@ project.impact.map((item)=>(
 
 ))
 
-
 }
 
 
@@ -707,7 +545,13 @@ gap-3
 >
 
 
-<button
+{
+
+project.caseStudy &&
+
+<a
+
+href={project.caseStudy}
 
 className="
 rounded-lg
@@ -716,6 +560,7 @@ px-5
 py-2
 font-semibold
 text-white
+transition
 hover:bg-blue-700
 "
 
@@ -723,11 +568,24 @@ hover:bg-blue-700
 
 View Case Study
 
-</button>
+</a>
+
+}
 
 
 
-<button
+
+{
+
+project.github &&
+
+<a
+
+href={project.github}
+
+target="_blank"
+
+rel="noopener noreferrer"
 
 className="
 rounded-lg
@@ -737,6 +595,7 @@ px-5
 py-2
 font-semibold
 text-gray-200
+transition
 hover:bg-gray-800
 "
 
@@ -744,13 +603,39 @@ hover:bg-gray-800
 
 GitHub
 
-</button>
+</a>
+
+}
+
+
+
+
+{
+
+!project.caseStudy &&
+
+<span
+
+className="
+rounded-lg
+border
+border-gray-700
+px-5
+py-2
+text-gray-500
+"
+
+>
+
+Coming Soon
+
+</span>
+
+}
 
 
 
 </div>
-
-
 
 
 
@@ -763,9 +648,7 @@ GitHub
 }
 
 
-
 </div>
-
 
 
 </div>

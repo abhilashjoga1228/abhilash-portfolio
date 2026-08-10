@@ -50,8 +50,6 @@ text-gray-400
 
 
 
-
-
 {/* Links */}
 
 <div
@@ -134,8 +132,8 @@ Mobile
 </div>
 
 
-
 </footer>
+
 
 );
 

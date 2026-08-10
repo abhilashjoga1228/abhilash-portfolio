@@ -6,7 +6,6 @@ import { Menu, X } from "lucide-react";
 
 export default function Navbar() {
 
-
 const [open,setOpen] = useState(false);
 
 
@@ -45,7 +44,6 @@ href:"#contact"
 ];
 
 
-
 return (
 
 <nav
@@ -79,16 +77,14 @@ py-4
 >
 
 
-
 {/* Logo */}
-
 
 <a
 
 href="#home"
 
 className="
-text-xl
+text-2xl
 font-bold
 bg-gradient-to-r
 from-blue-400
@@ -106,11 +102,7 @@ Abhilash Joga
 
 
 
-
-
-
-{/* Desktop Menu */}
-
+{/* Desktop Navigation */}
 
 <div
 
@@ -128,7 +120,6 @@ md:flex
 
 links.map((link)=>(
 
-
 <a
 
 key={link.name}
@@ -136,44 +127,24 @@ key={link.name}
 href={link.href}
 
 className="
-group
-relative
-text-sm
-text-gray-300
+text-base
+font-semibold
+text-gray-200
 transition
-hover:text-blue-400
+duration-300
+hover:text-cyan-400
+hover:drop-shadow-[0_0_10px_rgba(34,211,238,0.8)]
 "
 
 >
 
 {link.name}
 
-
-
-<span
-
-className="
-absolute
--bottom-2
-left-0
-h-[2px]
-w-0
-bg-blue-400
-transition-all
-group-hover:w-full
-"
-
-></span>
-
-
 </a>
-
 
 ))
 
-
 }
-
 
 
 </div>
@@ -181,48 +152,7 @@ group-hover:w-full
 
 
 
-
-
-
-
-{/* Resume Button */}
-
-
-<a
-
-href="/Abhilash_Joga_Resume.pdf"
-
-target="_blank"
-
-className="
-hidden
-rounded-xl
-bg-blue-600
-px-5
-py-2
-font-semibold
-text-white
-shadow-[0_0_25px_rgba(59,130,246,0.5)]
-transition
-hover:scale-105
-hover:bg-blue-700
-md:block
-"
-
->
-
-Resume
-
-</a>
-
-
-
-
-
-
-
 {/* Mobile Button */}
-
 
 <button
 
@@ -230,11 +160,12 @@ onClick={()=>setOpen(!open)}
 
 className="
 md:hidden
-text-gray-300
+text-gray-200
+transition
+hover:text-cyan-400
 "
 
 >
-
 
 {
 
@@ -248,11 +179,7 @@ open ?
 
 }
 
-
 </button>
-
-
-
 
 
 </div>
@@ -262,9 +189,7 @@ open ?
 
 
 
-
 {/* Mobile Menu */}
-
 
 {
 
@@ -300,8 +225,11 @@ onClick={()=>setOpen(false)}
 className="
 block
 py-3
-text-gray-300
-hover:text-blue-400
+text-base
+font-medium
+text-gray-200
+transition
+hover:text-cyan-400
 "
 
 >
@@ -312,7 +240,6 @@ hover:text-blue-400
 
 
 ))
-
 
 }
 
@@ -332,8 +259,12 @@ bg-blue-600
 px-4
 py-3
 text-center
+text-base
 font-semibold
 text-white
+shadow-[0_0_20px_rgba(59,130,246,0.5)]
+transition
+hover:bg-blue-700
 "
 
 >
@@ -350,8 +281,8 @@ View Resume
 }
 
 
-
 </nav>
+
 
 );
 

@@ -1,8 +1,7 @@
-export default function Experience() {
+"use client";
 
 
 const experiences = [
-
 
 {
 company:"Adobe",
@@ -11,18 +10,20 @@ logo:"/Logos/adobe.png",
 
 role:"Data Engineer / Analytics Engineer",
 
-duration:"2026",
+duration:"2026 - Present",
 
 description:
-"Built enterprise analytics solutions supporting business reporting, data integration, and cloud-based analytics initiatives.",
+"Built enterprise analytics solutions and supported cloud data modernization initiatives using Microsoft Fabric, Databricks, Azure, and Power BI.",
 
 achievements:[
 
-"Developed Power BI dashboards and analytical solutions",
+"Developed enterprise analytics solutions using Microsoft Fabric, Databricks, SQL, Azure, and Power BI",
 
-"Worked with Microsoft Fabric and cloud data platforms",
+"Supported migration of legacy SQL Server workloads to Databricks-based cloud data platforms",
 
-"Designed scalable data models and reporting workflows"
+"Designed scalable data models, ETL pipelines, and reporting workflows for analytics solutions",
+
+"Improved data accessibility through cloud modernization and BI enablement initiatives"
 
 ],
 
@@ -30,18 +31,17 @@ technologies:[
 
 "Microsoft Fabric",
 
+"Databricks",
+
 "Power BI",
 
 "SQL",
 
-"Azure",
-
-"Databricks"
+"Azure"
 
 ]
 
 },
-
 
 
 
@@ -51,24 +51,30 @@ company:"Swire Coca-Cola",
 
 logo:"/Logos/swire.jpg",
 
-role:"Senior Data Engineer",
+role:"Business Intelligence Analyst",
 
 duration:"2023 - 2026",
 
 description:
-"Designed scalable data engineering solutions supporting operational analytics and business intelligence.",
+"Designed scalable cloud data engineering solutions supporting enterprise analytics, data modernization, and business intelligence initiatives.",
 
 achievements:[
 
-"Built enterprise ETL/ELT pipelines",
+"Developed enterprise Power BI dashboards and semantic models for operational and financial analytics",
 
-"Developed operational and financial analytics dashboards",
+"Migrated SQL Server workloads to Snowflake cloud data platform, supporting modernization of enterprise analytics",
 
-"Implemented cloud data solutions and automation"
+"Migrated Snowflake analytics workloads to Microsoft Fabric architecture including Lakehouse and reporting solutions",
+
+"Designed data models and analytical datasets to improve business reporting and decision support",
+
+"Performed data validation, reconciliation, and quality checks during platform migration initiatives"
 
 ],
 
 technologies:[
+
+"Microsoft Fabric",
 
 "Azure",
 
@@ -87,53 +93,60 @@ technologies:[
 },
 
 
-
-
-
 {
 company:"Amazon",
 
 logo:"/Logos/amazon.png",
 
-role:"Data Engineer",
+role:"Last Mile Analyst",
 
 duration:"2020 - 2022",
 
 description:
-"Developed data pipelines and analytics solutions supporting large-scale business operations.",
+"Analyzed large-scale last-mile logistics operations using SQL, Amazon Redshift, Python, and analytics solutions to improve delivery performance across North America and Europe.",
+
 
 achievements:[
 
-"Built automated data processing workflows",
+"Analyzed operational data using SQL and Amazon Redshift to identify delivery bottlenecks, root causes, and process improvement opportunities",
 
-"Created analytical datasets for reporting",
+"Built logistics analytics dashboards using SQL and Amazon QuickSight to monitor delivery performance, productivity, and operational KPIs",
 
-"Optimized SQL queries and transformations"
+"Integrated real-time traffic and route data using Python, APIs, Apache Airflow, and AWS services to support delivery optimization initiatives",
+
+"Processed delivery feedback and geospatial datasets to improve map quality, routing accuracy, and last-mile delivery efficiency",
+
+"Applied statistical analysis using Python to identify routing patterns and reduce delivery inefficiencies"
 
 ],
 
-technologies:[
 
-"Python",
+technologies:[
 
 "SQL",
 
+"Amazon Redshift",
+
+"Python",
+
 "AWS",
 
-"ETL",
+"Apache Airflow",
 
-"Data Warehousing"
+"Amazon QuickSight",
+
+"Data Analytics"
 
 ]
 
 }
 
-
-
 ];
 
 
 
+
+export default function Experience(){
 
 
 return (
@@ -206,7 +219,7 @@ w-px
 bg-blue-400/30
 "
 
-></div>
+/>
 
 
 
@@ -230,10 +243,7 @@ pl-20
 >
 
 
-
-
-
-{/* Timeline Dot */}
+{/* Timeline Number */}
 
 <div
 
@@ -241,33 +251,23 @@ className="
 absolute
 left-3
 top-8
+flex
 h-10
 w-10
+items-center
+justify-center
 rounded-full
 border
 border-blue-400
 bg-slate-950
-flex
-items-center
-justify-center
+font-bold
+text-blue-400
 shadow-[0_0_20px_rgba(59,130,246,0.5)]
 "
 
 >
 
-<span
-
-className="
-text-blue-400
-font-bold
-"
-
->
-
 {index+1}
-
-</span>
-
 
 </div>
 
@@ -276,10 +276,7 @@ font-bold
 
 
 
-
-
 {/* Experience Card */}
-
 
 <div
 
@@ -290,7 +287,6 @@ border-blue-400/30
 bg-slate-900/40
 p-8
 backdrop-blur-xl
-shadow-[0_0_40px_rgba(59,130,246,0.08)]
 transition
 hover:-translate-y-2
 hover:border-cyan-400/50
@@ -300,10 +296,7 @@ hover:border-cyan-400/50
 
 
 
-
-
 {/* Company Header */}
-
 
 <div
 
@@ -329,7 +322,6 @@ rounded-xl
 bg-white
 object-contain
 p-2
-shadow-lg
 "
 
 />
@@ -358,8 +350,8 @@ text-white
 <p
 
 className="
-text-blue-400
 font-semibold
+text-blue-400
 "
 
 >
@@ -370,7 +362,7 @@ font-semibold
 
 
 
-<span
+<p
 
 className="
 text-sm
@@ -381,18 +373,13 @@ text-gray-400
 
 {exp.duration}
 
-</span>
-
-
-
-</div>
-
+</p>
 
 
 </div>
 
 
-
+</div>
 
 
 
@@ -417,11 +404,6 @@ text-gray-300
 
 
 
-
-
-{/* Achievements */}
-
-
 <h4
 
 className="
@@ -435,6 +417,7 @@ text-blue-400
 Key Contributions
 
 </h4>
+
 
 
 
@@ -467,7 +450,6 @@ key={item}
 
 ))
 
-
 }
 
 
@@ -477,10 +459,6 @@ key={item}
 
 
 
-
-
-
-{/* Technologies */}
 
 
 <h4
@@ -496,6 +474,8 @@ text-blue-400
 Technology Stack
 
 </h4>
+
+
 
 
 
@@ -540,7 +520,6 @@ text-blue-300
 
 ))
 
-
 }
 
 
@@ -550,22 +529,15 @@ text-blue-300
 
 
 
-
 </div>
 
 
-
-
-
 </div>
-
 
 
 ))
 
-
 }
-
 
 
 </div>
@@ -575,6 +547,7 @@ text-blue-300
 
 
 </section>
+
 
 );
 

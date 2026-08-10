@@ -2,6 +2,7 @@ import Navbar from "./components/Navbar";
 import Experience from "./components/Experience";
 import About from "./components/About";
 import Projects from "./components/Projects";
+import Certifications from "./components/Certifications";
 import Footer from "./components/Footer";
 import AnimatedBackground from "./components/AnimatedBackground";
 import Impact from "./components/Impact";
@@ -17,9 +18,9 @@ return (
 
 className="
 min-h-screen
+overflow-hidden
 bg-slate-950
 text-white
-overflow-hidden
 "
 
 >
@@ -28,11 +29,27 @@ overflow-hidden
 <Navbar />
 
 
+{/* Background */}
+
+<div
+
+className="
+absolute
+inset-0
+z-0
+"
+
+>
+
+<AnimatedBackground />
+
+</div>
+
+
 
 
 
 {/* HERO */}
-
 
 <section
 
@@ -40,8 +57,9 @@ id="home"
 
 className="
 relative
-min-h-screen
+z-10
 flex
+min-h-screen
 items-center
 overflow-hidden
 px-6
@@ -52,15 +70,9 @@ md:px-20
 >
 
 
-<AnimatedBackground />
-
-
-
 <div
 
 className="
-relative
-z-10
 mx-auto
 grid
 max-w-7xl
@@ -72,14 +84,9 @@ md:grid-cols-2
 >
 
 
-
-
-
-{/* LEFT SIDE */}
-
+{/* LEFT */}
 
 <div>
-
 
 
 <h1
@@ -105,8 +112,6 @@ Abhilash Joga
 
 
 
-
-
 <h2
 
 className="
@@ -125,7 +130,6 @@ Data & Analytics Engineer
 
 
 
-
 <p
 
 className="
@@ -136,12 +140,9 @@ text-gray-300
 
 >
 
-Cloud Data Platforms | AI Solutions
+Microsoft Fabric | Cloud Data Platforms | AI Solutions
 
 </p>
-
-
-
 
 
 
@@ -158,13 +159,12 @@ text-gray-300
 
 >
 
-Data & Analytics Engineer with 7+ years of
-experience building scalable data platforms,
-ETL pipelines, business intelligence solutions,
-and AI-powered automation systems.
+Data & Analytics Engineer with 7+ years of experience
+building scalable data platforms, ETL pipelines,
+business intelligence solutions, and AI-powered
+automation systems.
 
 </p>
-
 
 
 
@@ -189,11 +189,6 @@ SQL, and modern cloud data architectures.
 
 
 
-
-
-
-{/* SKILLS */}
-
 <div
 
 className="
@@ -211,15 +206,10 @@ gap-3
 [
 
 "Microsoft Fabric",
-
 "Azure",
-
 "Databricks",
-
 "Snowflake",
-
 "Power BI",
-
 "AI Automation"
 
 ].map((item)=>(
@@ -259,11 +249,6 @@ text-blue-300
 
 
 
-
-
-{/* BUTTONS */}
-
-
 <div
 
 className="
@@ -300,7 +285,6 @@ View Projects
 
 
 
-
 <a
 
 href="/Abhilash_Joga_Resume.pdf"
@@ -324,8 +308,6 @@ hover:bg-blue-500/10
 View Resume
 
 </a>
-
-
 
 
 
@@ -361,7 +343,6 @@ LinkedIn
 </div>
 
 
-
 </div>
 
 
@@ -370,10 +351,7 @@ LinkedIn
 
 
 
-
-{/* RIGHT SIDE PROFILE */}
-
-
+{/* RIGHT PROFILE */}
 
 <div
 
@@ -415,28 +393,18 @@ border-blue-400/40
 object-cover
 "
 
- />
+/>
 
 
-
-
-
-<div
-
-className="
-mt-6
-text-center
-"
-
->
 
 
 <h3
 
 className="
+mt-6
+text-center
 text-2xl
 font-bold
-text-white
 "
 
 >
@@ -447,20 +415,19 @@ Abhilash AI
 
 
 
-
 <p
 
 className="
 mt-2
+text-center
 text-blue-300
 "
 
 >
 
-AI Portfolio Assistant
+Data & Analytics Engineer
 
 </p>
-
 
 
 
@@ -468,6 +435,7 @@ AI Portfolio Assistant
 
 className="
 mt-3
+text-center
 text-sm
 text-gray-400
 "
@@ -483,14 +451,7 @@ text-gray-400
 </div>
 
 
-
 </div>
-
-
-
-</div>
-
-
 
 
 
@@ -503,120 +464,25 @@ text-gray-400
 
 
 
+{/* SECTIONS */}
 
 
-<div
-
-className="
-h-px
-w-full
-bg-gradient-to-r
-from-transparent
-via-blue-500/30
-to-transparent
-"
-
-/>
-
-
-
-
-
+<div className="relative z-10">
 
 
 <Impact />
 
 
-
 <About />
-
 
 
 <Experience />
 
 
-
-
-
-
-{/* SKILLS */}
-
-
-<section
-
-id="skills"
-
-className="
-px-6
-py-20
-"
-
->
-
-
-<div
-
-className="
-mx-auto
-max-w-6xl
-"
-
->
-
-
-<h2
-
-className="
-text-center
-text-4xl
-font-bold
-"
-
->
-
-Technical Expertise
-
-</h2>
-
-
-
-<p
-
-className="
-mx-auto
-mt-4
-max-w-3xl
-text-center
-text-gray-400
-"
-
->
-
-Technologies and platforms used to build
-scalable data engineering, analytics,
-cloud, and AI solutions.
-
-</p>
-
-
-
-</div>
-
-
-</section>
-
-
-
-
-
-
-
 <Projects />
 
 
-
-
-
+<Certifications />
 
 
 
@@ -626,7 +492,7 @@ id="contact"
 
 className="
 px-6
-py-16
+py-20
 "
 
 >
@@ -664,21 +530,55 @@ Let's Connect
 
 
 
-
 <p
-
 className="
 mt-4
 text-gray-300
 "
-
 >
-
 Open to opportunities in Data Engineering,
 Analytics, Cloud Data Platforms,
 Microsoft Fabric, and AI solutions.
-
 </p>
+
+
+<div
+
+className="
+mt-8
+flex
+flex-wrap
+justify-center
+gap-4
+"
+
+>
+
+
+<a
+
+href="https://www.linkedin.com/in/jogaabhilash/"
+target="_blank"
+rel="noopener noreferrer"
+
+className="
+rounded-xl
+border
+border-blue-400/40
+px-6
+py-3
+font-semibold
+text-blue-300
+transition
+hover:bg-blue-500/10
+"
+
+>
+
+LinkedIn
+
+</a>
+
 
 
 
@@ -687,39 +587,98 @@ Microsoft Fabric, and AI solutions.
 href="mailto:abhilashjoga1028@gmail.com"
 
 className="
-mt-6
-inline-block
 rounded-xl
-bg-blue-600
+border
+border-blue-400/40
 px-6
 py-3
 font-semibold
+text-blue-300
+transition
+hover:bg-blue-500/10
 "
 
 >
 
-Email Abhilash
+Email
 
 </a>
 
+
+
+
+<a
+
+href="tel:+13854613687"
+
+className="
+rounded-xl
+border
+border-blue-400/40
+px-6
+py-3
+font-semibold
+text-blue-300
+transition
+hover:bg-blue-500/10
+"
+
+>
+
+Mobile
+
+</a>
+
+
+
+
+<a
+
+href="https://github.com/abhilashjoga1228"
+
+target="_blank"
+rel="noopener noreferrer"
+
+className="
+rounded-xl
+border
+border-blue-400/40
+px-6
+py-3
+font-semibold
+text-blue-300
+transition
+hover:bg-blue-500/10
+"
+
+>
+
+GitHub
+
+</a>
 
 
 </div>
 
 
 
+</div>
+
+
 </section>
-
-
-
 
 
 
 <Footer />
 
 
-<ChatBot />
+</div>
 
+
+
+
+
+<ChatBot />
 
 
 </main>

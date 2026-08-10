@@ -1,144 +1,581 @@
 export default function Experience() {
-  return (
-    <section
-      id="experience"
-      className="px-10 py-20"
-    >
-
-      <h2 className="text-4xl font-bold">
-        Experience
-      </h2>
 
 
-      <div className="relative mt-10 border-l border-slate-700 pl-8">
+const experiences = [
 
 
-        {/* Adobe */}
-        <div className="mb-12">
+{
+company:"Adobe",
 
-          <div className="absolute -left-3 mt-2 h-6 w-6 rounded-full bg-blue-500"></div>
+logo:"/logos/adobe.png",
 
-          <h3 className="text-2xl font-bold text-blue-400">
-            Adobe
-          </h3>
+role:"Data Engineer / Analytics Engineer",
 
-          <p className="mt-2 text-xl font-semibold">
-            Data Engineer
-          </p>
+duration:"2026",
 
-          <p className="text-gray-400">
-            2026
-          </p>
+description:
+"Built enterprise analytics solutions supporting business reporting, data integration, and cloud-based analytics initiatives.",
 
+achievements:[
 
-          <ul className="mt-5 list-disc space-y-2 pl-5 text-gray-300">
+"Developed Power BI dashboards and analytical solutions",
 
-            <li>
-              Built analytics solutions using Microsoft Fabric,
-              Power BI, SQL, and cloud data platforms.
-            </li>
+"Worked with Microsoft Fabric and cloud data platforms",
 
-            <li>
-              Developed reporting solutions, data models, and
-              dashboards to support business decision-making.
-            </li>
+"Designed scalable data models and reporting workflows"
 
-            <li>
-              Improved data accessibility through automation and
-              optimized analytics workflows.
-            </li>
+],
 
-          </ul>
+technologies:[
 
-        </div>
+"Microsoft Fabric",
+
+"Power BI",
+
+"SQL",
+
+"Azure",
+
+"Databricks"
+
+]
+
+},
 
 
 
 
-        {/* Swire */}
-        <div className="mb-12">
 
-          <div className="absolute -left-3 mt-2 h-6 w-6 rounded-full bg-blue-500"></div>
+{
+company:"Swire Coca-Cola",
 
-          <h3 className="text-2xl font-bold text-blue-400">
-            Swire Coca-Cola
-          </h3>
+logo:"/logos/swire.jpg",
 
-          <p className="mt-2 text-xl font-semibold">
-            Business Intelligence Analyst
-          </p>
+role:"Senior Data Engineer",
 
-          <p className="text-gray-400">
-            2023 - 2026
-          </p>
+duration:"2023 - 2026",
 
+description:
+"Designed scalable data engineering solutions supporting operational analytics and business intelligence.",
 
-          <ul className="mt-5 list-disc space-y-2 pl-5 text-gray-300">
+achievements:[
 
-            <li>
-              Designed enterprise BI solutions using Power BI,
-              Azure, SQL, and modern data engineering practices.
-            </li>
+"Built enterprise ETL/ELT pipelines",
 
-            <li>
-              Built transportation, delivery, and operational
-              analytics dashboards for business teams.
-            </li>
+"Developed operational and financial analytics dashboards",
 
-            <li>
-              Automated reporting processes and optimized data
-              pipelines to improve operational visibility.
-            </li>
+"Implemented cloud data solutions and automation"
 
-          </ul>
+],
 
-        </div>
+technologies:[
 
+"Azure",
 
+"Databricks",
 
+"Snowflake",
 
-        {/* Amazon */}
-        <div className="mb-12">
+"Power BI",
 
-          <div className="absolute -left-3 mt-2 h-6 w-6 rounded-full bg-blue-500"></div>
+"Python",
 
-          <h3 className="text-2xl font-bold text-blue-400">
-            Amazon
-          </h3>
+"SQL"
 
-          <p className="mt-2 text-xl font-semibold">
-            Data Engineer
-          </p>
+]
 
-          <p className="text-gray-400">
-            Previous Experience
-          </p>
+},
 
 
-          <ul className="mt-5 list-disc space-y-2 pl-5 text-gray-300">
-
-            <li>
-              Developed scalable data pipelines and analytics
-              solutions supporting enterprise business operations.
-            </li>
-
-            <li>
-              Worked with SQL, Python, cloud technologies, and
-              data processing frameworks to transform large datasets.
-            </li>
-
-            <li>
-              Built reporting and data solutions to improve
-              operational insights and decision-making.
-            </li>
-
-          </ul>
-
-        </div>
 
 
-      </div>
 
-    </section>
-  );
+{
+company:"Amazon",
+
+logo:"/logos/amazon.png",
+
+role:"Data Engineer",
+
+duration:"2020 - 2022",
+
+description:
+"Developed data pipelines and analytics solutions supporting large-scale business operations.",
+
+achievements:[
+
+"Built automated data processing workflows",
+
+"Created analytical datasets for reporting",
+
+"Optimized SQL queries and transformations"
+
+],
+
+technologies:[
+
+"Python",
+
+"SQL",
+
+"AWS",
+
+"ETL",
+
+"Data Warehousing"
+
+]
+
+}
+
+
+
+];
+
+
+
+
+
+return (
+
+<section
+
+id="experience"
+
+className="
+px-6
+py-24
+"
+
+>
+
+
+<div
+
+className="
+mx-auto
+max-w-5xl
+"
+
+>
+
+
+<h2
+
+className="
+mb-16
+text-center
+text-4xl
+font-bold
+bg-gradient-to-r
+from-blue-400
+to-cyan-300
+bg-clip-text
+text-transparent
+"
+
+>
+
+Professional Experience
+
+</h2>
+
+
+
+
+
+<div
+
+className="
+relative
+"
+
+>
+
+
+{/* Timeline Line */}
+
+<div
+
+className="
+absolute
+left-8
+top-0
+h-full
+w-px
+bg-blue-400/30
+"
+
+></div>
+
+
+
+
+
+{
+
+experiences.map((exp,index)=>(
+
+
+<div
+
+key={exp.company}
+
+className="
+relative
+mb-12
+pl-20
+"
+
+>
+
+
+
+
+
+{/* Timeline Dot */}
+
+<div
+
+className="
+absolute
+left-3
+top-8
+h-10
+w-10
+rounded-full
+border
+border-blue-400
+bg-slate-950
+flex
+items-center
+justify-center
+shadow-[0_0_20px_rgba(59,130,246,0.5)]
+"
+
+>
+
+<span
+
+className="
+text-blue-400
+font-bold
+"
+
+>
+
+{index+1}
+
+</span>
+
+
+</div>
+
+
+
+
+
+
+
+
+{/* Experience Card */}
+
+
+<div
+
+className="
+rounded-3xl
+border
+border-blue-400/30
+bg-slate-900/40
+p-8
+backdrop-blur-xl
+shadow-[0_0_40px_rgba(59,130,246,0.08)]
+transition
+hover:-translate-y-2
+hover:border-cyan-400/50
+"
+
+>
+
+
+
+
+
+{/* Company Header */}
+
+
+<div
+
+className="
+flex
+items-center
+gap-5
+"
+
+>
+
+
+<img
+
+src={exp.logo}
+
+alt={exp.company}
+
+className="
+h-16
+w-16
+rounded-xl
+bg-white
+object-contain
+p-2
+shadow-lg
+"
+
+/>
+
+
+
+<div>
+
+
+<h3
+
+className="
+text-2xl
+font-bold
+text-white
+"
+
+>
+
+{exp.company}
+
+</h3>
+
+
+
+<p
+
+className="
+text-blue-400
+font-semibold
+"
+
+>
+
+{exp.role}
+
+</p>
+
+
+
+<span
+
+className="
+text-sm
+text-gray-400
+"
+
+>
+
+{exp.duration}
+
+</span>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<p
+
+className="
+mt-6
+leading-7
+text-gray-300
+"
+
+>
+
+{exp.description}
+
+</p>
+
+
+
+
+
+
+
+
+{/* Achievements */}
+
+
+<h4
+
+className="
+mt-6
+font-semibold
+text-blue-400
+"
+
+>
+
+Key Contributions
+
+</h4>
+
+
+
+<ul
+
+className="
+mt-3
+space-y-2
+text-gray-300
+"
+
+>
+
+
+{
+
+exp.achievements.map((item)=>(
+
+
+<li
+
+key={item}
+
+>
+
+✓ {item}
+
+</li>
+
+
+))
+
+
+}
+
+
+</ul>
+
+
+
+
+
+
+
+
+{/* Technologies */}
+
+
+<h4
+
+className="
+mt-6
+font-semibold
+text-blue-400
+"
+
+>
+
+Technology Stack
+
+</h4>
+
+
+
+<div
+
+className="
+mt-3
+flex
+flex-wrap
+gap-3
+"
+
+>
+
+
+{
+
+exp.technologies.map((tech)=>(
+
+
+<span
+
+key={tech}
+
+className="
+rounded-full
+border
+border-blue-400/30
+bg-blue-500/10
+px-4
+py-2
+text-sm
+text-blue-300
+"
+
+>
+
+{tech}
+
+</span>
+
+
+))
+
+
+}
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+))
+
+
+}
+
+
+
+</div>
+
+
+</div>
+
+
+</section>
+
+);
+
 }

@@ -1,53 +1,142 @@
 export default function Footer() {
-  return (
-    <footer className="border-t border-slate-800 px-10 py-10 text-center">
 
-      <h3 className="text-xl font-semibold text-white">
-        Abhilash Joga
-      </h3>
+return (
 
-      <p className="mt-3 text-gray-400">
-        Data Engineer | Microsoft Fabric | Analytics
-      </p>
+<footer
 
+className="
+border-t
+border-blue-400/20
+bg-slate-950
+px-6
+py-8
+"
 
-      <div className="mt-5 flex justify-center gap-6">
-
-        <a
-          href="https://www.linkedin.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-gray-300 hover:text-blue-400"
-        >
-          LinkedIn
-        </a>
+>
 
 
-        <a
-          href="https://github.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-gray-300 hover:text-blue-400"
-        >
-          GitHub
-        </a>
+<div
+
+className="
+mx-auto
+flex
+max-w-6xl
+flex-col
+items-center
+justify-between
+gap-5
+md:flex-row
+"
+
+>
 
 
-        <a
-          href="mailto:your-email@example.com"
-          className="text-gray-300 hover:text-blue-400"
-        >
-          Email
-        </a>
+{/* Copyright */}
 
-      </div>
+<p
+
+className="
+text-sm
+text-gray-400
+"
+
+>
+
+© {new Date().getFullYear()} Abhilash Joga. All rights reserved.
+
+</p>
 
 
-      <p className="mt-8 text-sm text-gray-500">
-        © {new Date().getFullYear()} Abhilash Joga. All rights reserved.
-      </p>
 
 
-    </footer>
-  );
+
+
+
+{/* Links */}
+
+<div
+
+className="
+flex
+gap-6
+text-sm
+"
+
+>
+
+
+<a
+
+href="https://www.linkedin.com/in/jogaabhilash/"
+
+target="_blank"
+
+rel="noopener noreferrer"
+
+className="
+text-gray-300
+transition
+hover:text-blue-400
+"
+
+>
+
+LinkedIn
+
+</a>
+
+
+
+
+
+<a
+
+href="mailto:abhilashjoga1028@gmail.com"
+
+className="
+text-gray-300
+transition
+hover:text-blue-400
+"
+
+>
+
+Email
+
+</a>
+
+
+
+
+
+<a
+
+href="tel:+13854613687"
+
+className="
+text-gray-300
+transition
+hover:text-blue-400
+"
+
+>
+
+Mobile
+
+</a>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+</footer>
+
+);
+
 }

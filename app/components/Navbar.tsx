@@ -1,42 +1,358 @@
+"use client";
+
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
+
+
 export default function Navbar() {
-  return (
-    <nav className="fixed top-0 z-50 w-full border-b border-slate-800 bg-slate-950/80 backdrop-blur">
-
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-
-        {/* Logo */}
-        <h1 className="text-xl font-bold text-white">
-          Abhilash Joga
-        </h1>
 
 
-        {/* Navigation Links */}
-        <div className="hidden gap-8 text-gray-300 md:flex">
+const [open,setOpen] = useState(false);
 
-          <a href="#home" className="hover:text-blue-400">
-            Home
-          </a>
 
-          <a href="#experience" className="hover:text-blue-400">
-            Experience
-          </a>
+const links = [
 
-          <a href="#skills" className="hover:text-blue-400">
-            Skills
-          </a>
+{
+name:"Home",
+href:"#home"
+},
 
-          <a href="#projects" className="hover:text-blue-400">
-            Projects
-          </a>
+{
+name:"About",
+href:"#about"
+},
 
-          <a href="#contact" className="hover:text-blue-400">
-            Contact
-          </a>
+{
+name:"Experience",
+href:"#experience"
+},
 
-        </div>
+{
+name:"Skills",
+href:"#skills"
+},
 
-      </div>
+{
+name:"Projects",
+href:"#projects"
+},
 
-    </nav>
-  );
+{
+name:"Contact",
+href:"#contact"
+}
+
+];
+
+
+
+return (
+
+<nav
+
+className="
+fixed
+top-0
+z-50
+w-full
+border-b
+border-blue-400/20
+bg-slate-950/80
+backdrop-blur-xl
+"
+
+>
+
+
+<div
+
+className="
+mx-auto
+flex
+max-w-7xl
+items-center
+justify-between
+px-6
+py-4
+"
+
+>
+
+
+
+{/* Logo */}
+
+
+<a
+
+href="#home"
+
+className="
+text-xl
+font-bold
+bg-gradient-to-r
+from-blue-400
+to-cyan-300
+bg-clip-text
+text-transparent
+"
+
+>
+
+Abhilash Joga
+
+</a>
+
+
+
+
+
+
+
+{/* Desktop Menu */}
+
+
+<div
+
+className="
+hidden
+items-center
+gap-8
+md:flex
+"
+
+>
+
+
+{
+
+links.map((link)=>(
+
+
+<a
+
+key={link.name}
+
+href={link.href}
+
+className="
+group
+relative
+text-sm
+text-gray-300
+transition
+hover:text-blue-400
+"
+
+>
+
+{link.name}
+
+
+
+<span
+
+className="
+absolute
+-bottom-2
+left-0
+h-[2px]
+w-0
+bg-blue-400
+transition-all
+group-hover:w-full
+"
+
+></span>
+
+
+</a>
+
+
+))
+
+
+}
+
+
+
+</div>
+
+
+
+
+
+
+
+
+{/* Resume Button */}
+
+
+<a
+
+href="/Abhilash_Joga_Resume.pdf"
+
+target="_blank"
+
+className="
+hidden
+rounded-xl
+bg-blue-600
+px-5
+py-2
+font-semibold
+text-white
+shadow-[0_0_25px_rgba(59,130,246,0.5)]
+transition
+hover:scale-105
+hover:bg-blue-700
+md:block
+"
+
+>
+
+Resume
+
+</a>
+
+
+
+
+
+
+
+{/* Mobile Button */}
+
+
+<button
+
+onClick={()=>setOpen(!open)}
+
+className="
+md:hidden
+text-gray-300
+"
+
+>
+
+
+{
+
+open ?
+
+<X size={26}/>
+
+:
+
+<Menu size={26}/>
+
+}
+
+
+</button>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+{/* Mobile Menu */}
+
+
+{
+
+open && (
+
+<div
+
+className="
+border-t
+border-white/10
+bg-slate-950/95
+px-6
+py-5
+md:hidden
+"
+
+>
+
+
+{
+
+links.map((link)=>(
+
+
+<a
+
+key={link.name}
+
+href={link.href}
+
+onClick={()=>setOpen(false)}
+
+className="
+block
+py-3
+text-gray-300
+hover:text-blue-400
+"
+
+>
+
+{link.name}
+
+</a>
+
+
+))
+
+
+}
+
+
+
+<a
+
+href="/Abhilash_Joga_Resume.pdf"
+
+target="_blank"
+
+className="
+mt-4
+block
+rounded-lg
+bg-blue-600
+px-4
+py-3
+text-center
+font-semibold
+text-white
+"
+
+>
+
+View Resume
+
+</a>
+
+
+</div>
+
+)
+
+}
+
+
+
+</nav>
+
+);
+
 }

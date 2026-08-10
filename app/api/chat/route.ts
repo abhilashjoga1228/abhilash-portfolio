@@ -1,10 +1,11 @@
 import OpenAI from "openai";
 import { profileData } from "@/app/data/profile";
+import { resumeKnowledge } from "@/app/data/resumeKnowledge";
 
 
 const openai = new OpenAI({
 
-  apiKey: process.env.OPENAI_API_KEY,
+apiKey: process.env.OPENAI_API_KEY,
 
 });
 
@@ -13,185 +14,174 @@ const openai = new OpenAI({
 export async function POST(req: Request) {
 
 
-  try {
+try {
 
 
-    const { message } = await req.json();
-
-
-
-
-    const response = await openai.chat.completions.create({
-
-
-      model: "gpt-4o-mini",
+const { message } = await req.json();
 
 
 
-      messages: [
+const response = await openai.chat.completions.create({
 
 
-        {
-
-
-          role: "system",
+model:"gpt-4o-mini",
 
 
 
-          content: `
+messages:[
+
+
+{
+
+role:"system",
+
+content:`
 
 You are Abhilash AI, a professional portfolio assistant.
 
 
-Your purpose is to help people understand Abhilash Joga's:
 
+Your purpose:
+
+Help people understand Abhilash Joga's:
 
 - Experience
 - Technical skills
 - Projects
-- Technologies
 - Certifications
+- Migration experience
 - Career background
 - Job fit for technical roles
 
 
 
+Knowledge Sources:
+
+1. Portfolio Profile
+2. Resume Information
+
+
+
 Rules:
 
-
-- Use ONLY information from the profile provided.
-- Do not invent information.
+- Use the provided information as the source of truth.
+- Do not invent experience.
+- You may explain technologies and certifications using general AI knowledge.
 - Keep answers concise.
-- Limit responses to 5-7 bullet points maximum.
-- Avoid long paragraphs.
 - Use bullet points whenever possible.
-- Explain technical concepts clearly.
-- Highlight business impact when discussing projects.
+- Highlight business impact.
 
 
 
-Job Matching Capability:
+Job Matching:
 
-If the user shares a job description, job requirements, or asks whether Abhilash is a fit for a role:
+When a user provides a job description:
 
-Analyze the job requirements against Abhilash's profile.
+Analyze:
+
+- Required skills
+- Cloud platforms
+- Data engineering technologies
+- Migration experience
+- Certifications
+- Relevant projects
 
 
-Always respond using this format:
+
+Format:
+
 
 
 ## Job Match Analysis
-
 
 **Estimated Match: XX%**
 
 
 ### Strong Matches
 
-- Mention matching skills and technologies
-- Mention relevant experience
+- Skills matching the role
+- Relevant technologies
+- Relevant experience
 
 
 ### Relevant Experience
 
-- Mention companies, projects, or responsibilities that align
+- Companies
+- Projects
+- Migration work
 
 
 ### Potential Gaps
 
-- Mention missing technologies or unclear requirements
-- If a technology differs, explain transferable experience
+- Missing requirements
+- Explain transferable skills
 
 
 ### Recommendation
 
-Provide a short professional conclusion.
-
-
-Rules:
-
-- Do not repeat the job description.
-- Do not copy requirements from the JD.
-- Focus only on Abhilash's match.
-- Be realistic with the match percentage.
-- Mention differences between cloud platforms when applicable.
-
-Example:
-
-If a role requires GCP but Abhilash has Azure/Fabric experience:
-
-Mention that cloud data engineering skills are transferable, but GCP-specific services are not listed.
+Short professional conclusion.
 
 
 
-Profile Information:
+Portfolio Information:
+
+${JSON.stringify(profileData,null,2)}
 
 
-${JSON.stringify(profileData, null, 2)}
+
+Resume Information:
+
+${resumeKnowledge}
+
 
 
 `
 
-        },
+},
 
 
+{
 
-        {
+role:"user",
 
+content:message
 
-          role:"user",
-
-
-          content: message
-
-
-        }
+}
 
 
-      ]
+]
 
 
-    });
+});
 
 
 
 
+return Response.json({
 
-    return Response.json({
+answer:
+response.choices[0].message.content
 
-
-      answer:
-
-      response.choices[0].message.content
-
-
-    });
+});
 
 
+}
 
-  }
-
-
-
-  catch(error){
+catch(error){
 
 
-    console.log("OPENAI ERROR:", error);
+console.log("OPENAI ERROR:",error);
 
 
 
-    return Response.json({
+return Response.json({
+
+answer:
+"Sorry, I am unable to answer right now."
+
+});
 
 
-      answer:
-
-      "Sorry, I am unable to answer right now."
-
-
-    });
-
-
-  }
-
+}
 
 }

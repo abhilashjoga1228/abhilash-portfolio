@@ -7,7 +7,7 @@ const experiences = [
 {
 company:"Adobe",
 
-logo:"/logos/adobe.png",
+logo:"/Logos/adobe.png",
 
 role:"Data Engineer / Analytics Engineer",
 
@@ -49,7 +49,7 @@ technologies:[
 {
 company:"Swire Coca-Cola",
 
-logo:"/logos/swire.jpg",
+logo:"/Logos/swire.jpg",
 
 role:"Senior Data Engineer",
 
@@ -93,7 +93,7 @@ technologies:[
 {
 company:"Amazon",
 
-logo:"/logos/amazon.png",
+logo:"/Logos/amazon.png",
 
 role:"Data Engineer",
 

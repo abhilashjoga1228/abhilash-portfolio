@@ -125,7 +125,7 @@ text-cyan-400
 
 >
 
-DATA ENGINEERING CASE STUDY
+DATA AND ANALYTICS ENGINEERING CASE STUDY
 
 </p>
 
@@ -733,8 +733,11 @@ gap-3
 "SQL Server",
 "Python",
 "DAX",
+"Power Automate",
 "Data Modeling",
+"Power Apps",
 "GitHub Actions"
+
 ].map(tech=>(
 
 
@@ -819,15 +822,15 @@ text-gray-300
 
 >
 
-<li>✓ Standardized delivery performance measurement</li>
+<li>✓ Reduced delivery stops by 12.5% through delivery frequency optimization</li>
 
-<li>✓ Improved operational visibility</li>
+<li>✓ Reduced transportation costs by 23% through logistics and route analytics</li>
 
-<li>✓ Enabled cost-to-serve analysis</li>
+<li>✓ Improved driver and delivery productivity through KPI-driven performance analysis</li>
 
-<li>✓ Supported delivery frequency optimization</li>
+<li>✓ Enabled cost-to-serve analysis to identify high-cost and low-efficiency deliveries</li>
 
-<li>✓ Created executive analytics framework</li>
+<li>✓ Built executive Power BI analytics for delivery performance, productivity, and cost optimization</li>
 
 </ul>
 

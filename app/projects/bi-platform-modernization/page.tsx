@@ -1,5 +1,48 @@
 "use client";
 
+const operatingModelSteps = [
+  {
+    step: "01",
+    title: "Development",
+    subtitle: "Build analytics solutions",
+    logo: "/Logos/powerplatform.png",
+    items: ["Power BI", "Power Apps", "Power Automate"],
+    type: "image",
+  },
+  {
+    step: "02",
+    title: "Source Control",
+    subtitle: "Track and govern changes",
+    logo: "",
+    items: ["PBIP", "Git", "Version History"],
+    type: "git",
+  },
+  {
+    step: "03",
+    title: "Deployment",
+    subtitle: "Promote validated releases",
+    logo: "/Logos/powerbi.png",
+    items: ["Development", "Test", "Production"],
+    type: "image",
+  },
+  {
+    step: "04",
+    title: "Governance",
+    subtitle: "Centralize ownership",
+    logo: "/Logos/azure.png",
+    items: ["Service Accounts", "Credentials", "Access"],
+    type: "image",
+  },
+  {
+    step: "05",
+    title: "Production",
+    subtitle: "Operate and support",
+    logo: "/Logos/powerbi.png",
+    items: ["Governed", "Monitored", "Maintainable"],
+    type: "image",
+  },
+];
+
 export default function BIPlatformModernizationCaseStudy() {
   return (
     <main className="min-h-screen bg-slate-950 text-white">
@@ -36,7 +79,7 @@ export default function BIPlatformModernizationCaseStudy() {
           <p className="mt-6 max-w-4xl text-lg leading-8 text-gray-300">
             A modernization initiative focused on improving how enterprise
             Power BI, Power Apps, and Power Automate solutions are developed,
-            versioned, deployed, owned, and supported in production.
+            versioned, deployed, owned, monitored, and supported in production.
           </p>
 
           <div className="mt-10 flex flex-wrap gap-3">
@@ -78,9 +121,9 @@ export default function BIPlatformModernizationCaseStudy() {
           <p className="mt-5 max-w-4xl leading-8 text-gray-300">
             The objective of this modernization effort was to introduce more
             structured development standards, repeatable deployment practices,
-            source control, governed production ownership, and improved
-            application lifecycle management across Power BI and Power
-            Platform solutions.
+            source control, governed production ownership, automated monitoring,
+            and improved application lifecycle management across Power BI and
+            Power Platform solutions.
           </p>
 
           <div className="mt-10 grid gap-5 md:grid-cols-2">
@@ -103,7 +146,7 @@ export default function BIPlatformModernizationCaseStudy() {
         </div>
       </section>
 
-      {/* Before / After */}
+      {/* Modernization Strategy */}
       <section className="border-t border-blue-400/10 px-6 py-20">
         <div className="mx-auto max-w-6xl">
           <h2 className="text-3xl font-bold text-white">
@@ -150,89 +193,140 @@ export default function BIPlatformModernizationCaseStudy() {
         </div>
       </section>
 
-      {/* Target Architecture */}
+      {/* Target Operating Model */}
       <section className="border-t border-blue-400/10 px-6 py-20">
         <div className="mx-auto max-w-6xl">
-          <h2 className="text-3xl font-bold text-white">
-            Target Operating Model
-          </h2>
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-400">
+              ENTERPRISE OPERATING MODEL
+            </div>
 
-          <div className="mt-10 overflow-x-auto rounded-3xl border border-blue-400/20 bg-slate-900/40 p-8">
-            <div className="min-w-[900px]">
-              <div className="flex items-center justify-between gap-4 text-center">
-                <div className="w-40 rounded-xl border border-blue-400/30 bg-blue-500/10 p-5">
-                  <div className="font-semibold text-blue-300">
-                    Development
-                  </div>
-                  <div className="mt-2 text-sm text-gray-400">
-                    Power BI
-                    <br />
-                    Power Apps
-                    <br />
-                    Power Automate
-                  </div>
+            <h2 className="mt-3 text-3xl font-bold text-white">
+              Target Operating Model
+            </h2>
+
+            <p className="mt-6 max-w-4xl leading-8 text-gray-300">
+              The target model connects development, source control,
+              environment promotion, governance, and production support into a
+              controlled lifecycle for enterprise BI and Power Platform
+              solutions.
+            </p>
+          </div>
+
+          <div className="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-5">
+            {operatingModelSteps.map((item, index) => (
+              <div
+                key={item.title}
+                className="group relative rounded-3xl border border-blue-400/20 bg-slate-900/50 p-6 transition duration-300 hover:-translate-y-1 hover:border-cyan-400/40 hover:bg-slate-900/70"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold tracking-[0.2em] text-cyan-400">
+                    STEP {item.step}
+                  </span>
+
+                  {index < operatingModelSteps.length - 1 && (
+                    <span className="hidden text-xl text-cyan-400 xl:block">
+                      →
+                    </span>
+                  )}
                 </div>
 
-                <div className="text-2xl text-cyan-400">→</div>
-
-                <div className="w-40 rounded-xl border border-blue-400/30 bg-blue-500/10 p-5">
-                  <div className="font-semibold text-blue-300">
-                    Source Control
-                  </div>
-                  <div className="mt-2 text-sm text-gray-400">
-                    PBIP
-                    <br />
-                    Git
-                    <br />
-                    Version History
-                  </div>
+                <div className="mt-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-blue-400/20 bg-slate-950">
+                  {item.type === "image" ? (
+                    <img
+                      src={item.logo}
+                      alt={item.title}
+                      className="h-10 w-10 object-contain"
+                    />
+                  ) : (
+                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-red-500 text-sm font-black text-white">
+                      Git
+                    </div>
+                  )}
                 </div>
 
-                <div className="text-2xl text-cyan-400">→</div>
+                <h3 className="mt-6 text-xl font-bold text-white">
+                  {item.title}
+                </h3>
 
-                <div className="w-40 rounded-xl border border-cyan-400/40 bg-cyan-500/10 p-5">
-                  <div className="font-semibold text-cyan-300">
-                    Deployment
-                  </div>
-                  <div className="mt-2 text-sm text-gray-400">
-                    Dev
-                    <br />
-                    Test
-                    <br />
-                    Production
-                  </div>
-                </div>
+                <p className="mt-2 text-sm text-gray-400">
+                  {item.subtitle}
+                </p>
 
-                <div className="text-2xl text-cyan-400">→</div>
-
-                <div className="w-40 rounded-xl border border-blue-400/30 bg-blue-500/10 p-5">
-                  <div className="font-semibold text-blue-300">
-                    Governance
-                  </div>
-                  <div className="mt-2 text-sm text-gray-400">
-                    Service Accounts
-                    <br />
-                    Credentials
-                    <br />
-                    Ownership
-                  </div>
-                </div>
-
-                <div className="text-2xl text-cyan-400">→</div>
-
-                <div className="w-40 rounded-xl border border-blue-400/30 bg-blue-500/10 p-5">
-                  <div className="font-semibold text-blue-300">
-                    Production
-                  </div>
-                  <div className="mt-2 text-sm text-gray-400">
-                    Governed
-                    <br />
-                    Supported
-                    <br />
-                    Maintainable
-                  </div>
+                <div className="mt-5 space-y-2">
+                  {item.items.map((detail) => (
+                    <div
+                      key={detail}
+                      className="rounded-lg border border-blue-400/10 bg-slate-950/50 px-3 py-2 text-sm text-gray-300"
+                    >
+                      {detail}
+                    </div>
+                  ))}
                 </div>
               </div>
+            ))}
+          </div>
+
+          <div className="mt-8 rounded-3xl border border-cyan-400/20 bg-gradient-to-r from-blue-500/5 to-cyan-500/5 p-7">
+            <h3 className="text-lg font-bold text-cyan-300">
+              Enterprise BI Lifecycle
+            </h3>
+
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              {[
+                "Develop",
+                "Version",
+                "Validate",
+                "Deploy",
+                "Govern",
+                "Monitor",
+                "Support",
+              ].map((item, index, array) => (
+                <div key={item} className="flex items-center gap-3">
+                  <span className="rounded-full border border-blue-400/30 bg-slate-950/70 px-4 py-2 text-sm text-blue-300">
+                    {item}
+                  </span>
+
+                  {index !== array.length - 1 && (
+                    <span className="text-cyan-400">→</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6 grid gap-5 md:grid-cols-3">
+            <div className="rounded-2xl border border-blue-400/20 bg-slate-900/50 p-6">
+              <h3 className="font-bold text-blue-300">
+                Controlled Development
+              </h3>
+
+              <p className="mt-3 text-sm leading-6 text-gray-300">
+                Developers work in structured environments with source control,
+                validation practices, and clear change history.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-blue-400/20 bg-slate-900/50 p-6">
+              <h3 className="font-bold text-blue-300">
+                Governed Deployment
+              </h3>
+
+              <p className="mt-3 text-sm leading-6 text-gray-300">
+                Solutions move through Dev, Test, and Production using
+                controlled promotion and release practices.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-blue-400/20 bg-slate-900/50 p-6">
+              <h3 className="font-bold text-blue-300">
+                Sustainable Production
+              </h3>
+
+              <p className="mt-3 text-sm leading-6 text-gray-300">
+                Production ownership, credentials, monitoring, and support are
+                designed to reduce dependency on individual developers.
+              </p>
             </div>
           </div>
         </div>
@@ -372,6 +466,185 @@ export default function BIPlatformModernizationCaseStudy() {
                 ✓ {item}
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Automated BI Monitoring */}
+      <section className="border-t border-blue-400/10 px-6 py-20">
+        <div className="mx-auto max-w-6xl">
+          <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-400">
+                POWER AUTOMATE ORCHESTRATION
+              </div>
+
+              <h2 className="mt-3 text-3xl font-bold text-white">
+                Automated BI Monitoring & Refresh Orchestration
+              </h2>
+
+              <p className="mt-6 max-w-4xl leading-8 text-gray-300">
+                Power Automate workflows were used to orchestrate recurring BI
+                validation, conditional refresh execution, status evaluation,
+                and automated notifications across analytics solutions.
+              </p>
+            </div>
+
+            <span className="w-fit rounded-full border border-emerald-400/30 bg-emerald-500/10 px-4 py-2 text-xs font-semibold text-emerald-300">
+              Sanitized Portfolio Visual
+            </span>
+          </div>
+
+          {/* Main Flow */}
+          <div className="mt-8 rounded-3xl border border-blue-400/20 bg-slate-900/40 p-5">
+            <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+              <div>
+                <h3 className="text-xl font-bold text-blue-300">
+                  Validation & Refresh Orchestration
+                </h3>
+
+                <p className="mt-3 text-sm leading-6 text-gray-300">
+                  A scheduled workflow performs automated validation checks,
+                  evaluates results, executes refresh actions when validation
+                  passes, and routes failures through notification paths for
+                  operational follow-up.
+                </p>
+
+                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  {[
+                    {
+                      title: "Scheduled Validation",
+                      description:
+                        "Recurring checks before downstream refresh.",
+                    },
+                    {
+                      title: "Conditional Logic",
+                      description:
+                        "Validation controls the next processing step.",
+                    },
+                    {
+                      title: "Dataset Refresh",
+                      description:
+                        "Refresh runs after validation succeeds.",
+                    },
+                    {
+                      title: "Operational Alerts",
+                      description:
+                        "Teams and email surface failures.",
+                    },
+                  ].map((item) => (
+                    <div
+                      key={item.title}
+                      className="rounded-xl border border-blue-400/20 bg-blue-500/5 p-3"
+                    >
+                      <h4 className="text-sm font-semibold text-blue-300">
+                        {item.title}
+                      </h4>
+
+                      <p className="mt-1 text-xs leading-5 text-gray-400">
+                        {item.description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex justify-center">
+                <div className="w-full max-w-xl overflow-hidden rounded-2xl border border-white/10 bg-white">
+                  <img
+                    src="/projects/power-automate-validation-main.png"
+                    alt="Power Automate BI validation and refresh orchestration workflow"
+                    className="mx-auto max-h-[300px] w-auto max-w-full object-contain"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Supporting Flow */}
+          <div className="mt-8 grid gap-8 lg:grid-cols-2">
+            <div className="rounded-3xl border border-blue-400/20 bg-slate-900/40 p-7">
+              <div className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400">
+                FAILURE HANDLING
+              </div>
+
+              <h3 className="mt-3 text-2xl font-bold text-white">
+                Validation, Status Parsing & Notification
+              </h3>
+
+              <p className="mt-5 leading-7 text-gray-300">
+                Supporting automation handles result parsing and operational
+                exception management. Failed validation or refresh conditions
+                can trigger targeted Teams and email notifications, allowing
+                support teams to identify issues without manually monitoring
+                each dataset.
+              </p>
+
+              <div className="mt-6 space-y-3 text-sm text-gray-300">
+                {[
+                  "Parse validation and refresh status",
+                  "Detect failed or incomplete execution",
+                  "Route exceptions to Teams notifications",
+                  "Send email-based failure alerts",
+                  "Support post-refresh validation",
+                ].map((item) => (
+                  <div
+                    key={item}
+                    className="rounded-xl border border-blue-400/20 bg-slate-950/50 p-4"
+                  >
+                    ✓ {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center rounded-3xl border border-blue-400/20 bg-slate-900/40 p-5 md:p-7">
+              <div className="w-full max-w-xl overflow-hidden rounded-2xl border border-white/10 bg-white">
+                <img
+                  src="/projects/power-automate-validation-alerts.png"
+                  alt="Power Automate validation and notification workflow"
+                  className="mx-auto max-h-[300px] w-auto max-w-full object-contain"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 grid gap-8 lg:grid-cols-2">
+            <div />
+
+            <p className="mx-auto max-w-xl text-sm leading-6 text-gray-500">
+              Flow labels and business-specific terminology have been sanitized
+              for portfolio presentation. No credentials, internal identifiers,
+              production configuration, or proprietary data are shown.
+            </p>
+          </div>
+
+          {/* Automation Flow */}
+          <div className="mt-8 rounded-3xl border border-cyan-400/20 bg-cyan-500/5 p-7">
+            <h3 className="text-lg font-bold text-cyan-300">
+              Automation Pattern
+            </h3>
+
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              {[
+                "Scheduled Trigger",
+                "BI Validation",
+                "Condition Check",
+                "Dataset Refresh",
+                "Post-Refresh Validation",
+                "Teams / Email Alert",
+              ].map((item, index, array) => (
+                <div key={item} className="flex items-center gap-3">
+                  <span className="rounded-full border border-blue-400/30 bg-slate-950/70 px-4 py-2 text-sm text-blue-300">
+                    {item}
+                  </span>
+
+                  {index !== array.length - 1 && (
+                    <span className="text-cyan-400">→</span>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -521,6 +794,7 @@ export default function BIPlatformModernizationCaseStudy() {
               "Standardized Dev, Test, and Production deployment practices",
               "Improved change tracking and solution traceability",
               "Implemented structured ALM practices for Power Apps and Power Automate",
+              "Automated BI validation, refresh monitoring, and operational notifications",
               "Reduced dependency on individual developer credentials",
               "Improved production ownership through governed service accounts",
               "Established repeatable BI and Power Platform development standards",
@@ -614,11 +888,11 @@ export default function BIPlatformModernizationCaseStudy() {
 
             <p className="mt-5 max-w-4xl leading-8 text-gray-300">
               Sustainable analytics platforms require source control,
-              environment management, deployment standards, governed
-              credentials, clear ownership, and repeatable application
-              lifecycle practices. The modernization effort created a stronger
-              operating model for Power BI and Power Platform solutions while
-              reducing dependency on individual developers.
+              environment management, deployment standards, automated
+              monitoring, governed credentials, clear ownership, and repeatable
+              application lifecycle practices. The modernization effort created
+              a stronger operating model for Power BI and Power Platform
+              solutions while reducing dependency on individual developers.
             </p>
           </div>
         </div>
@@ -629,10 +903,11 @@ export default function BIPlatformModernizationCaseStudy() {
         <div className="mx-auto max-w-6xl">
           <p className="text-sm leading-6 text-gray-500">
             This case study summarizes enterprise BI and Power Platform
-            modernization patterns based on professional experience. The
-            architecture and examples are simplified for portfolio presentation
-            and do not expose confidential company environments, credentials,
-            production configuration, or proprietary implementation details.
+            modernization patterns based on professional experience. Workflow
+            labels and examples shown in portfolio visuals have been sanitized
+            for presentation. The case study does not expose confidential
+            company environments, credentials, customer information, production
+            configuration, or proprietary implementation details.
           </p>
         </div>
       </section>

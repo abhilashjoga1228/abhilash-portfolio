@@ -3,287 +3,100 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 
-
-export default function Navbar() {
-
-const [open,setOpen] = useState(false);
-
-
 const links = [
-
-{
-name:"Home",
-href:"#home"
-},
-
-{
-name:"About",
-href:"#about"
-},
-
-{
-name:"Experience",
-href:"#experience"
-},
-
-{
-name:"Skills",
-href:"#skills"
-},
-
-{
-name:"Projects",
-href:"#projects"
-},
-
-{
-name:"Contact",
-href:"#contact"
-}
-
+  {
+    name: "Home",
+    href: "#home",
+  },
+  {
+    name: "About",
+    href: "#about",
+  },
+  {
+    name: "Experience",
+    href: "#experience",
+  },
+  {
+    name: "Projects",
+    href: "#projects",
+  },
+  {
+    name: "Certifications",
+    href: "#certifications",
+  },
+  {
+    name: "Contact",
+    href: "#contact",
+  },
 ];
 
-
-return (
-
-<nav
-
-className="
-fixed
-top-0
-z-50
-w-full
-border-b
-border-blue-400/20
-bg-slate-950/80
-backdrop-blur-xl
-"
-
->
-
-
-<div
-
-className="
-mx-auto
-flex
-max-w-7xl
-items-center
-justify-between
-px-6
-py-4
-"
-
->
-
-
-{/* Logo */}
-
-<a
-
-href="#home"
-
-className="
-text-2xl
-font-bold
-bg-gradient-to-r
-from-blue-400
-to-cyan-300
-bg-clip-text
-text-transparent
-"
-
->
-
-Abhilash Joga
-
-</a>
-
-
-
-
-{/* Desktop Navigation */}
-
-<div
-
-className="
-hidden
-items-center
-gap-8
-md:flex
-"
-
->
-
-
-{
-
-links.map((link)=>(
-
-<a
-
-key={link.name}
-
-href={link.href}
-
-className="
-text-base
-font-semibold
-text-gray-200
-transition
-duration-300
-hover:text-cyan-400
-hover:drop-shadow-[0_0_10px_rgba(34,211,238,0.8)]
-"
-
->
-
-{link.name}
-
-</a>
-
-))
-
-}
-
-
-</div>
-
-
-
-
-{/* Mobile Button */}
-
-<button
-
-onClick={()=>setOpen(!open)}
-
-className="
-md:hidden
-text-gray-200
-transition
-hover:text-cyan-400
-"
-
->
-
-{
-
-open ?
-
-<X size={26}/>
-
-:
-
-<Menu size={26}/>
-
-}
-
-</button>
-
-
-</div>
-
-
-
-
-
-
-{/* Mobile Menu */}
-
-{
-
-open && (
-
-<div
-
-className="
-border-t
-border-white/10
-bg-slate-950/95
-px-6
-py-5
-md:hidden
-"
-
->
-
-
-{
-
-links.map((link)=>(
-
-
-<a
-
-key={link.name}
-
-href={link.href}
-
-onClick={()=>setOpen(false)}
-
-className="
-block
-py-3
-text-base
-font-medium
-text-gray-200
-transition
-hover:text-cyan-400
-"
-
->
-
-{link.name}
-
-</a>
-
-
-))
-
-}
-
-
-
-<a
-
-href="/Abhilash_Joga_Resume.pdf"
-
-target="_blank"
-
-className="
-mt-4
-block
-rounded-lg
-bg-blue-600
-px-4
-py-3
-text-center
-text-base
-font-semibold
-text-white
-shadow-[0_0_20px_rgba(59,130,246,0.5)]
-transition
-hover:bg-blue-700
-"
-
->
-
-View Resume
-
-</a>
-
-
-</div>
-
-)
-
-}
-
-
-</nav>
-
-
-);
-
+export default function Navbar() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <nav className="fixed left-0 right-0 top-0 z-50 border-b border-blue-400/10 bg-slate-950/85 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        {/* Name / Brand */}
+        <a
+          href="#home"
+          onClick={() => setOpen(false)}
+          className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-xl font-bold text-transparent transition hover:opacity-90 md:text-2xl"
+        >
+          Abhilash Joga
+        </a>
+
+        {/* Desktop Navigation */}
+        <div className="hidden items-center gap-7 md:flex">
+          {links.map((link) => (
+            <a
+              key={link.name}
+              href={link.href}
+              className="text-sm font-medium text-gray-300 transition duration-300 hover:text-cyan-300 lg:text-base"
+            >
+              {link.name}
+            </a>
+          ))}
+        </div>
+
+        {/* Mobile Menu Button */}
+        <button
+          type="button"
+          onClick={() => setOpen((current) => !current)}
+          aria-label={open ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={open}
+          className="flex h-10 w-10 items-center justify-center rounded-lg border border-blue-400/20 text-gray-200 transition hover:border-cyan-400/40 hover:bg-blue-500/10 hover:text-cyan-300 md:hidden"
+        >
+          {open ? <X size={22} /> : <Menu size={22} />}
+        </button>
+      </div>
+
+      {/* Mobile Menu */}
+      {open && (
+        <div className="border-t border-blue-400/10 bg-slate-950/95 px-6 pb-6 pt-3 backdrop-blur-xl md:hidden">
+          <div className="flex flex-col">
+            {links.map((link) => (
+              <a
+                key={link.name}
+                href={link.href}
+                onClick={() => setOpen(false)}
+                className="border-b border-white/5 py-3.5 text-base font-medium text-gray-300 transition hover:text-cyan-300"
+              >
+                {link.name}
+              </a>
+            ))}
+          </div>
+
+          <a
+            href="/Abhilash_Joga_Resume.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => setOpen(false)}
+            className="mt-5 block rounded-xl bg-blue-600 px-5 py-3 text-center text-sm font-semibold text-white transition hover:bg-blue-500"
+          >
+            View Resume
+          </a>
+        </div>
+      )}
+    </nav>
+  );
 }

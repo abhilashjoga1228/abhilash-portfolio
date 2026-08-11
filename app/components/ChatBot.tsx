@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Calendar,
   Check,
+  ChevronLeft,
+  ChevronRight,
   Maximize2,
   Minimize2,
   Send,
@@ -64,6 +66,8 @@ const initialBooking: BookingDetails = {
   end: "",
   displayTime: "",
 };
+
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 function formatDateYYYYMMDD(date: Date) {
   const year = date.getFullYear();
@@ -179,6 +183,19 @@ function parseNaturalDate(input: string): string | null {
   return null;
 }
 
+function isSkipValue(value: string) {
+  const normalized = value.trim().toLowerCase();
+
+  return [
+    "skip",
+    "skp",
+    "sklip",
+    "skip it",
+    "na",
+    "n/a",
+  ].includes(normalized);
+}
+
 export default function ChatBot() {
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -194,6 +211,16 @@ export default function ChatBot() {
   const [availableSlots, setAvailableSlots] =
     useState<AvailableSlot[]>([]);
 
+  const [calendarMonth, setCalendarMonth] = useState(() => {
+    const now = new Date();
+
+    return new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      1
+    );
+  });
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const [messages, setMessages] = useState<Message[]>([
@@ -201,19 +228,9 @@ export default function ChatBot() {
       role: "ai",
       text: `Hi 👋 I'm Abhilash AI.
 
-I can help you explore:
+I can help with **experience, skills, projects, job-fit analysis, and meeting scheduling**.
 
-• Experience & career background  
-• Technical skills & technologies  
-• Projects and case studies  
-• Job fit analysis  
-• Cloud and migration experience  
-• Certifications  
-• **Schedule a 30-minute meeting with Abhilash**
-
-For the fastest direct response, you can also reach Abhilash through **LinkedIn or email**.
-
-Share a job description, ask about his experience, or ask me to schedule a meeting!`,
+Choose a quick action above or ask me anything about Abhilash.`,
     },
   ]);
 
@@ -222,6 +239,49 @@ Share a job description, ask about his experience, or ask me to schedule a meeti
       behavior: "smooth",
     });
   }, [messages, availableSlots, scheduleStep]);
+
+  const calendarDays = useMemo(() => {
+    const year = calendarMonth.getFullYear();
+    const month = calendarMonth.getMonth();
+
+    const firstDay = new Date(year, month, 1);
+
+    const lastDate = new Date(
+      year,
+      month + 1,
+      0
+    ).getDate();
+
+    const days: Array<Date | null> = [];
+
+    for (
+      let i = 0;
+      i < firstDay.getDay();
+      i++
+    ) {
+      days.push(null);
+    }
+
+    for (
+      let day = 1;
+      day <= lastDate;
+      day++
+    ) {
+      days.push(
+        new Date(
+          year,
+          month,
+          day
+        )
+      );
+    }
+
+    while (days.length % 7 !== 0) {
+      days.push(null);
+    }
+
+    return days;
+  }, [calendarMonth]);
 
   function addAIMessage(text: string) {
     setMessages((prev) => [
@@ -243,24 +303,146 @@ Share a job description, ask about his experience, or ask me to schedule a meeti
     ]);
   }
 
+  function resetCalendarToCurrentMonth() {
+    const now = new Date();
+
+    setCalendarMonth(
+      new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        1
+      )
+    );
+  }
+
   function resetScheduling() {
     setScheduleStep("idle");
     setBooking(initialBooking);
     setAvailableSlots([]);
+    resetCalendarToCurrentMonth();
   }
 
   function startScheduling() {
     setAvailableSlots([]);
     setBooking(initialBooking);
+    resetCalendarToCurrentMonth();
     setScheduleStep("name");
 
     addAIMessage(`Absolutely — I can help coordinate a **30-minute meeting with Abhilash**.
 
-For the fastest direct response, you can also contact him through **LinkedIn or email**.
-
-I'll collect a few details and then check his Google Calendar.
+I'll collect a few details and then show you a calendar where you can select a date.
 
 **First, what is your name?**`);
+  }
+
+  function isPastDate(date: Date) {
+    const today = new Date();
+
+    today.setHours(
+      0,
+      0,
+      0,
+      0
+    );
+
+    const comparison = new Date(date);
+
+    comparison.setHours(
+      0,
+      0,
+      0,
+      0
+    );
+
+    return comparison < today;
+  }
+
+  function isWeekend(date: Date) {
+    const day = date.getDay();
+
+    return day === 0 || day === 6;
+  }
+
+  function isSelectedDate(date: Date) {
+    return booking.date === formatDateYYYYMMDD(date);
+  }
+
+  function isToday(date: Date) {
+    const today = new Date();
+
+    return (
+      today.getFullYear() === date.getFullYear() &&
+      today.getMonth() === date.getMonth() &&
+      today.getDate() === date.getDate()
+    );
+  }
+
+  function canGoPreviousMonth() {
+    const now = new Date();
+
+    const currentMonthStart = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      1
+    );
+
+    return calendarMonth > currentMonthStart;
+  }
+
+  function previousMonth() {
+    if (!canGoPreviousMonth()) return;
+
+    setCalendarMonth(
+      new Date(
+        calendarMonth.getFullYear(),
+        calendarMonth.getMonth() - 1,
+        1
+      )
+    );
+  }
+
+  function nextMonth() {
+    setCalendarMonth(
+      new Date(
+        calendarMonth.getFullYear(),
+        calendarMonth.getMonth() + 1,
+        1
+      )
+    );
+  }
+
+  function selectCalendarDate(date: Date) {
+    if (
+      isPastDate(date) ||
+      isWeekend(date)
+    ) {
+      return;
+    }
+
+    const formattedDate =
+      formatDateYYYYMMDD(date);
+
+    const friendlyDate =
+      formatFriendlyDate(formattedDate);
+
+    setBooking((prev) => ({
+      ...prev,
+      date: formattedDate,
+      dateDisplay: friendlyDate,
+      start: "",
+      end: "",
+      displayTime: "",
+    }));
+
+    addUserMessage(friendlyDate);
+
+    setScheduleStep("dateConfirm");
+
+    addAIMessage(`You selected:
+
+📅 **${friendlyDate}**
+
+Would you like me to check Abhilash's Google Calendar for available times?`);
   }
 
   async function loadAvailability(date: string) {
@@ -268,21 +450,33 @@ I'll collect a few details and then check his Google Calendar.
     setAvailableSlots([]);
 
     try {
-      const response = await fetch("/api/availability", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          date,
-          timeZone: "America/Denver",
-          meetingDurationMinutes: 30,
-        }),
-      });
+      const response = await fetch(
+        "/api/availability",
+        {
+          method: "POST",
 
-      const data = await response.json();
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
 
-      if (!response.ok || !data.success) {
+          body: JSON.stringify({
+            date,
+            timeZone:
+              "America/Denver",
+            meetingDurationMinutes:
+              30,
+          }),
+        }
+      );
+
+      const data =
+        await response.json();
+
+      if (
+        !response.ok ||
+        !data.success
+      ) {
         addAIMessage(
           data.message ||
             data.error ||
@@ -290,34 +484,52 @@ I'll collect a few details and then check his Google Calendar.
         );
 
         setScheduleStep("date");
+
         return;
       }
 
-      const slots: AvailableSlot[] = data.availableSlots || [];
+      const slots: AvailableSlot[] =
+        data.availableSlots || [];
 
       if (slots.length === 0) {
         addAIMessage(`Abhilash doesn't currently have an available 30-minute slot on **${
-          booking.dateDisplay || formatFriendlyDate(date)
+          booking.dateDisplay ||
+          formatFriendlyDate(date)
         }**.
 
-Please choose another weekday.`);
+Please choose another weekday from the calendar.`);
+
+        setBooking((prev) => ({
+          ...prev,
+          date: "",
+          dateDisplay: "",
+          start: "",
+          end: "",
+          displayTime: "",
+        }));
 
         setScheduleStep("date");
+
         return;
       }
 
       setAvailableSlots(slots);
+
       setScheduleStep("slot");
 
       addAIMessage(`I found available times for **${
-        booking.dateDisplay || formatFriendlyDate(date)
+        booking.dateDisplay ||
+        formatFriendlyDate(date)
       }**.
 
 All times below are shown in **Mountain Time (MT)**.
 
 Please select a 30-minute slot.`);
     } catch (error) {
-      console.error("AVAILABILITY ERROR:", error);
+      console.error(
+        "AVAILABILITY ERROR:",
+        error
+      );
 
       addAIMessage(
         "Sorry, I couldn't check Abhilash's calendar right now. You can still contact him directly through LinkedIn or email."
@@ -329,7 +541,9 @@ Please select a 30-minute slot.`);
     }
   }
 
-  function selectSlot(slot: AvailableSlot) {
+  function selectSlot(
+    slot: AvailableSlot
+  ) {
     setBooking((prev) => ({
       ...prev,
       start: slot.start,
@@ -338,18 +552,32 @@ Please select a 30-minute slot.`);
     }));
 
     setAvailableSlots([]);
+
     setScheduleStep("confirm");
 
-    addUserMessage(slot.display);
+    addUserMessage(
+      slot.display
+    );
 
     addAIMessage(`Please confirm the meeting details:
 
 **Name:** ${booking.name}  
 **Email:** ${booking.email}  
-**Company:** ${booking.company || "Not provided"}  
-**Reason:** ${booking.reason || "Not provided"}  
-**Date:** ${booking.dateDisplay || booking.date}  
-**Time:** ${slot.display} Mountain Time  
+**Company:** ${
+      booking.company ||
+      "Not provided"
+    }  
+**Reason:** ${
+      booking.reason ||
+      "Not provided"
+    }  
+**Date:** ${
+      booking.dateDisplay ||
+      booking.date
+    }  
+**Time:** ${
+      slot.display
+    } Mountain Time  
 **Duration:** 30 minutes
 
 If everything looks correct, click **Confirm Meeting** below.
@@ -370,46 +598,68 @@ The selected time will be checked again before the meeting is created.`);
       );
 
       resetScheduling();
+
       return;
     }
 
     setLoading(true);
 
     try {
-      const response = await fetch("/api/schedule", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: booking.name,
-          email: booking.email,
-          company: booking.company,
-          reason: booking.reason,
-          start: booking.start,
-          end: booking.end,
-          timeZone: "America/Denver",
-        }),
-      });
+      const response = await fetch(
+        "/api/schedule",
+        {
+          method: "POST",
 
-      const data = await response.json();
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
 
-      if (!response.ok || !data.success) {
-        if (response.status === 409) {
+          body: JSON.stringify({
+            name: booking.name,
+            email: booking.email,
+            company:
+              booking.company,
+            reason:
+              booking.reason,
+            start:
+              booking.start,
+            end:
+              booking.end,
+            timeZone:
+              "America/Denver",
+          }),
+        }
+      );
+
+      const data =
+        await response.json();
+
+      if (
+        !response.ok ||
+        !data.success
+      ) {
+        if (
+          response.status === 409
+        ) {
           addAIMessage(`That time is no longer available.
 
-Please choose another date and I'll check Abhilash's calendar again.`);
+Please select another date from the calendar and I'll check again.`);
 
           setScheduleStep("date");
 
-          setBooking((prev) => ({
-            ...prev,
-            date: "",
-            dateDisplay: "",
-            start: "",
-            end: "",
-            displayTime: "",
-          }));
+          setAvailableSlots([]);
+
+          setBooking(
+            (prev) => ({
+              ...prev,
+              date: "",
+              dateDisplay: "",
+              start: "",
+              end: "",
+              displayTime: "",
+            })
+          );
 
           return;
         }
@@ -422,8 +672,13 @@ Please choose another date and I'll check Abhilash's calendar again.`);
         return;
       }
 
-      const meetLink = data.meeting?.meetLink || null;
-      const calendarLink = data.meeting?.calendarLink || null;
+      const meetLink =
+        data.meeting
+          ?.meetLink || null;
+
+      const calendarLink =
+        data.meeting
+          ?.calendarLink || null;
 
       addAIMessage(`✅ **Meeting scheduled successfully!**
 
@@ -449,17 +704,14 @@ ${
 
 Abhilash will also have the meeting on his calendar.
 
-Thank you for reaching out!
-
-While you're here, feel free to explore **Abhilash's case studies, projects, experience, and technical background**.
-
-You can also use the links below to view his **resume**, connect on **LinkedIn**, or send him an **email**.
-
-Have a great day!`);
+Thank you for reaching out!`);
 
       resetScheduling();
     } catch (error) {
-      console.error("SCHEDULE ERROR:", error);
+      console.error(
+        "SCHEDULE ERROR:",
+        error
+      );
 
       addAIMessage(`Sorry, something went wrong while scheduling the meeting.
 
@@ -469,12 +721,17 @@ Please contact Abhilash directly through **LinkedIn or email**, or try again.`);
     }
   }
 
-  async function handleSchedulingInput(userMessage: string) {
-    const value = userMessage.trim();
+  async function handleSchedulingInput(
+    userMessage: string
+  ) {
+    const value =
+      userMessage.trim();
 
     if (!value) return;
 
-    if (scheduleStep === "name") {
+    if (
+      scheduleStep === "name"
+    ) {
       setBooking((prev) => ({
         ...prev,
         name: value,
@@ -482,7 +739,9 @@ Please contact Abhilash directly through **LinkedIn or email**, or try again.`);
 
       addUserMessage(value);
 
-      setScheduleStep("email");
+      setScheduleStep(
+        "email"
+      );
 
       addAIMessage(
         `Thanks, ${value}. What is the best **email address** for the calendar invitation?`
@@ -491,10 +750,17 @@ Please contact Abhilash directly through **LinkedIn or email**, or try again.`);
       return;
     }
 
-    if (scheduleStep === "email") {
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (
+      scheduleStep === "email"
+    ) {
+      const emailPattern =
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      if (!emailPattern.test(value)) {
+      if (
+        !emailPattern.test(
+          value
+        )
+      ) {
         addAIMessage(
           "Please enter a valid email address so Google Calendar can send you the invitation."
         );
@@ -509,7 +775,9 @@ Please contact Abhilash directly through **LinkedIn or email**, or try again.`);
 
       addUserMessage(value);
 
-      setScheduleStep("company");
+      setScheduleStep(
+        "company"
+      );
 
       addAIMessage(`What company or organization are you with?
 
@@ -518,9 +786,14 @@ If this doesn't apply, type **Skip**.`);
       return;
     }
 
-    if (scheduleStep === "company") {
+    if (
+      scheduleStep ===
+      "company"
+    ) {
       const company =
-        value.toLowerCase() === "skip" ? "" : value;
+        isSkipValue(value)
+          ? ""
+          : value;
 
       setBooking((prev) => ({
         ...prev,
@@ -529,7 +802,9 @@ If this doesn't apply, type **Skip**.`);
 
       addUserMessage(value);
 
-      setScheduleStep("reason");
+      setScheduleStep(
+        "reason"
+      );
 
       addAIMessage(`What would you like to connect with Abhilash about?
 
@@ -546,9 +821,14 @@ You can also type **Skip**.`);
       return;
     }
 
-    if (scheduleStep === "reason") {
+    if (
+      scheduleStep ===
+      "reason"
+    ) {
       const reason =
-        value.toLowerCase() === "skip" ? "" : value;
+        isSkipValue(value)
+          ? ""
+          : value;
 
       setBooking((prev) => ({
         ...prev,
@@ -557,83 +837,122 @@ You can also type **Skip**.`);
 
       addUserMessage(value);
 
+      resetCalendarToCurrentMonth();
+
       setScheduleStep("date");
 
-      addAIMessage(`Great. What day would you prefer?
+      addAIMessage(`Great. Please choose a date from the **calendar below**.
 
-You can say things like:
+Available scheduling:
 
-• **Today**
-• **Tomorrow**
-• **Friday**
-• **Next Monday**
-• **August 14**
-• **2026-08-14**
+**Monday–Friday**  
+**9:00 AM–5:00 PM Mountain Time**
 
-Scheduling is available **Monday through Friday, 9:00 AM–5:00 PM Mountain Time**.`);
+Past dates and weekends are disabled.
+
+You can also type a date such as **tomorrow**, **Friday**, or **August 14**.`);
 
       return;
     }
 
-    if (scheduleStep === "date") {
-      const parsedDate = parseNaturalDate(value);
+    if (
+      scheduleStep ===
+      "date"
+    ) {
+      const parsedDate =
+        parseNaturalDate(
+          value
+        );
 
       if (!parsedDate) {
         addAIMessage(`I couldn't understand that date.
 
-You can say:
-
-• **Today**
-• **Tomorrow**
-• **Friday**
-• **Next Monday**
-• **August 14**
-• **2026-08-14**
-
-Which day would you prefer?`);
+Please choose a date from the calendar below or type something like **tomorrow**, **Friday**, or **August 14**.`);
 
         return;
       }
 
-      const friendlyDate = formatFriendlyDate(parsedDate);
+      const parsedDateObject =
+        new Date(
+          `${parsedDate}T12:00:00`
+        );
 
-      const parsedDateObject = new Date(
-        `${parsedDate}T12:00:00`
+      const today =
+        new Date();
+
+      today.setHours(
+        0,
+        0,
+        0,
+        0
       );
 
-      const today = new Date();
+      const comparisonDate =
+        new Date(
+          parsedDateObject
+        );
 
-      today.setHours(0, 0, 0, 0);
+      comparisonDate.setHours(
+        0,
+        0,
+        0,
+        0
+      );
 
-      const comparisonDate = new Date(parsedDateObject);
+      if (
+        comparisonDate <
+        today
+      ) {
+        addUserMessage(
+          value
+        );
 
-      comparisonDate.setHours(0, 0, 0, 0);
-
-      if (comparisonDate < today) {
-        addUserMessage(value);
-
-        addAIMessage(`That date has already passed.
-
-Please choose **today or a future weekday**.`);
+        addAIMessage(
+          "That date has already passed. Please choose today or a future weekday."
+        );
 
         return;
       }
+
+      if (
+        isWeekend(
+          parsedDateObject
+        )
+      ) {
+        addUserMessage(
+          value
+        );
+
+        addAIMessage(
+          "Scheduling is available Monday through Friday. Please choose a weekday."
+        );
+
+        return;
+      }
+
+      const friendlyDate =
+        formatFriendlyDate(
+          parsedDate
+        );
 
       setBooking((prev) => ({
         ...prev,
         date: parsedDate,
-        dateDisplay: friendlyDate,
+        dateDisplay:
+          friendlyDate,
       }));
 
       addUserMessage(value);
 
-      setScheduleStep("dateConfirm");
+      setScheduleStep(
+        "dateConfirm"
+      );
 
       addAIMessage(`You selected:
 
 📅 **${friendlyDate}**
 
-Is this the correct date?`);
+Would you like me to check availability?`);
 
       return;
     }
@@ -641,10 +960,12 @@ Is this the correct date?`);
 
   function confirmSelectedDate() {
     if (!booking.date) {
-      setScheduleStep("date");
+      setScheduleStep(
+        "date"
+      );
 
       addAIMessage(
-        "Please choose a date again."
+        "Please choose a date from the calendar again."
       );
 
       return;
@@ -661,30 +982,47 @@ Is this the correct date?`);
 
   function changeSelectedDate() {
     addUserMessage(
-      "No, choose another date"
+      "Change date"
     );
 
     setBooking((prev) => ({
       ...prev,
       date: "",
       dateDisplay: "",
+      start: "",
+      end: "",
+      displayTime: "",
     }));
 
-    setScheduleStep("date");
+    setAvailableSlots([]);
 
-    addAIMessage(`No problem. What day would you prefer?
+    setScheduleStep(
+      "date"
+    );
 
-You can say **today**, **tomorrow**, **Friday**, **next Monday**, or enter a specific date.`);
+    addAIMessage(
+      "No problem. Please choose another date from the calendar below."
+    );
   }
 
-  async function sendMessage(question?: string) {
-    const userMessage = question || input;
+  async function sendMessage(
+    question?: string
+  ) {
+    const userMessage =
+      question || input;
 
-    if (!userMessage.trim()) return;
+    if (
+      !userMessage.trim()
+    ) {
+      return;
+    }
 
     setInput("");
 
-    if (userMessage === "📅 Schedule a Meeting") {
+    if (
+      userMessage ===
+      "📅 Schedule a Meeting"
+    ) {
       addUserMessage(
         "I'd like to schedule a meeting with Abhilash."
       );
@@ -694,69 +1032,109 @@ You can say **today**, **tomorrow**, **Friday**, **next Monday**, or enter a spe
       return;
     }
 
-    if (scheduleStep !== "idle") {
+    if (
+      scheduleStep !==
+      "idle"
+    ) {
       if (
-        scheduleStep === "slot" ||
-        scheduleStep === "confirm" ||
-        scheduleStep === "dateConfirm"
+        scheduleStep ===
+          "slot" ||
+        scheduleStep ===
+          "confirm" ||
+        scheduleStep ===
+          "dateConfirm"
       ) {
         return;
       }
 
-      await handleSchedulingInput(userMessage);
+      await handleSchedulingInput(
+        userMessage
+      );
 
       return;
     }
 
-    const lower = userMessage.toLowerCase();
+    const lower =
+      userMessage.toLowerCase();
 
     const schedulingIntent =
-      lower.includes("schedule") ||
-      lower.includes("book a meeting") ||
-      lower.includes("book meeting") ||
-      lower.includes("set up a meeting") ||
-      lower.includes("setup a meeting") ||
-      lower.includes("meet with abhilash") ||
-      lower.includes("speak with abhilash");
+      lower.includes(
+        "schedule"
+      ) ||
+      lower.includes(
+        "book a meeting"
+      ) ||
+      lower.includes(
+        "book meeting"
+      ) ||
+      lower.includes(
+        "set up a meeting"
+      ) ||
+      lower.includes(
+        "setup a meeting"
+      ) ||
+      lower.includes(
+        "meet with abhilash"
+      ) ||
+      lower.includes(
+        "speak with abhilash"
+      );
 
-    if (schedulingIntent) {
-      addUserMessage(userMessage);
+    if (
+      schedulingIntent
+    ) {
+      addUserMessage(
+        userMessage
+      );
 
       startScheduling();
 
       return;
     }
 
-    addUserMessage(userMessage);
+    addUserMessage(
+      userMessage
+    );
 
     setLoading(true);
 
     try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
+      const response =
+        await fetch(
+          "/api/chat",
+          {
+            method: "POST",
 
-        headers: {
-          "Content-Type": "application/json",
-        },
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
 
-        body: JSON.stringify({
-          message: userMessage,
-        }),
-      });
+            body: JSON.stringify({
+              message:
+                userMessage,
+            }),
+          }
+        );
 
-      const data = await response.json();
+      const data =
+        await response.json();
 
       setMessages((prev) => [
         ...prev,
         {
           role: "ai",
+
           text:
             data.answer ||
             "Sorry, I am unable to answer right now.",
         },
       ]);
     } catch (error) {
-      console.error("CHAT ERROR:", error);
+      console.error(
+        "CHAT ERROR:",
+        error
+      );
 
       setMessages((prev) => [
         ...prev,
@@ -770,30 +1148,42 @@ You can say **today**, **tomorrow**, **Friday**, **next Monday**, or enter a spe
     }
   }
 
+  const monthTitle =
+    new Intl.DateTimeFormat(
+      "en-US",
+      {
+        month: "long",
+        year: "numeric",
+      }
+    ).format(
+      calendarMonth
+    );
+
   return (
     <>
-      <button
-        onClick={() => setOpen(!open)}
-        className="
-          fixed
-          bottom-6
-          right-6
-          z-50
-          flex
-          h-16
-          w-16
-          items-center
-          justify-center
-          rounded-full
-          bg-blue-600
-          shadow-[0_0_30px_rgba(59,130,246,0.6)]
-          transition
-          hover:scale-105
-        "
-      >
-        {open ? (
-          <X size={28} />
-        ) : (
+      {!open && (
+        <button
+          onClick={() =>
+            setOpen(true)
+          }
+          className="
+            fixed
+            bottom-6
+            right-6
+            z-50
+            flex
+            h-16
+            w-16
+            items-center
+            justify-center
+            rounded-full
+            bg-blue-600
+            shadow-[0_0_30px_rgba(59,130,246,0.6)]
+            transition
+            hover:scale-105
+          "
+          aria-label="Open Abhilash AI assistant"
+        >
           <img
             src="/abhilash.jpg"
             alt="Abhilash"
@@ -804,8 +1194,8 @@ You can say **today**, **tomorrow**, **Friday**, **next Monday**, or enter a spe
               object-cover
             "
           />
-        )}
-      </button>
+        </button>
+      )}
 
       {open && (
         <div
@@ -815,18 +1205,18 @@ You can say **today**, **tomorrow**, **Friday**, **next Monday**, or enter a spe
             flex
             flex-col
             overflow-hidden
+            rounded-3xl
             border
             border-blue-400/20
             bg-slate-950
             shadow-2xl
             transition-all
             duration-300
-            rounded-3xl
 
             ${
               expanded
-                ? "bottom-6 right-6 h-[90vh] w-[1100px] max-w-[calc(100vw-3rem)]"
-                : "bottom-24 right-6 h-[85vh] w-[520px] max-w-[calc(100vw-2rem)]"
+                ? "bottom-4 right-4 h-[86vh] w-[calc(100vw-2rem)] max-w-[900px] sm:bottom-6 sm:right-6"
+                : "bottom-4 right-4 h-[min(650px,calc(100vh-2rem))] w-[calc(100vw-2rem)] sm:bottom-6 sm:right-6 sm:w-[430px]"
             }
           `}
         >
@@ -837,15 +1227,15 @@ You can say **today**, **tomorrow**, **Friday**, **next Monday**, or enter a spe
               gap-3
               border-b
               border-white/10
-              p-5
+              p-4
             "
           >
             <img
               src="/abhilash.jpg"
               alt="Abhilash"
               className="
-                h-16
-                w-16
+                h-11
+                w-11
                 rounded-full
                 border
                 border-blue-400
@@ -853,12 +1243,12 @@ You can say **today**, **tomorrow**, **Friday**, **next Monday**, or enter a spe
               "
             />
 
-            <div>
+            <div className="min-w-0">
               <h3 className="font-bold text-blue-400">
                 Abhilash AI
               </h3>
 
-              <p className="text-xs text-gray-400">
+              <p className="truncate text-xs text-gray-400">
                 Portfolio, Job Fit & Scheduling Assistant
               </p>
 
@@ -870,7 +1260,9 @@ You can say **today**, **tomorrow**, **Friday**, **next Monday**, or enter a spe
             <div className="ml-auto flex gap-2">
               <button
                 onClick={() =>
-                  setExpanded(!expanded)
+                  setExpanded(
+                    !expanded
+                  )
                 }
                 className="
                   rounded-lg
@@ -881,11 +1273,20 @@ You can say **today**, **tomorrow**, **Friday**, **next Monday**, or enter a spe
                   hover:bg-blue-600
                   hover:text-white
                 "
+                aria-label={
+                  expanded
+                    ? "Minimize assistant"
+                    : "Expand assistant"
+                }
               >
                 {expanded ? (
-                  <Minimize2 size={16} />
+                  <Minimize2
+                    size={16}
+                  />
                 ) : (
-                  <Maximize2 size={16} />
+                  <Maximize2
+                    size={16}
+                  />
                 )}
               </button>
 
@@ -902,6 +1303,7 @@ You can say **today**, **tomorrow**, **Friday**, **next Monday**, or enter a spe
                   hover:bg-blue-600
                   hover:text-white
                 "
+                aria-label="Close assistant"
               >
                 <X size={16} />
               </button>
@@ -915,37 +1317,28 @@ You can say **today**, **tomorrow**, **Friday**, **next Monday**, or enter a spe
               p-3
             "
           >
-            <p
-              className="
-                mb-3
-                text-xs
-                font-semibold
-                text-blue-400
-              "
-            >
+            <p className="mb-2 text-xs font-semibold text-blue-400">
               Try asking
             </p>
 
-            <div
-              className="
-                flex
-                flex-wrap
-                gap-2
-              "
-            >
+            <div className="flex flex-wrap gap-2">
               {suggestedQuestions.map(
                 (question) => (
                   <button
                     key={question}
                     onClick={() =>
-                      sendMessage(question)
+                      sendMessage(
+                        question
+                      )
                     }
-                    disabled={loading}
+                    disabled={
+                      loading
+                    }
                     className={`
                       rounded-full
                       border
                       px-3
-                      py-2
+                      py-1.5
                       text-xs
                       transition
 
@@ -965,21 +1358,6 @@ You can say **today**, **tomorrow**, **Friday**, **next Monday**, or enter a spe
                 )
               )}
             </div>
-
-            <div
-              className="
-                mt-3
-                rounded-lg
-                bg-blue-500/10
-                p-2
-                text-xs
-                text-blue-300
-              "
-            >
-              🎯 Paste a Data/Analytics job description for a match score
-              <br />
-              📅 I can also help schedule a 30-minute meeting with Abhilash
-            </div>
           </div>
 
           <div
@@ -992,40 +1370,245 @@ You can say **today**, **tomorrow**, **Friday**, **next Monday**, or enter a spe
             "
           >
             {messages.map(
-              (message, index) => (
+              (
+                message,
+                index
+              ) => (
                 <div
                   key={index}
                   className={`
                     rounded-xl
                     p-3
-                    text-base
-                    leading-relaxed
+                    text-sm
+                    leading-6
                     break-words
 
                     ${
-                      message.role === "user"
+                      message.role ===
+                      "user"
                         ? "ml-8 bg-blue-600 text-white"
                         : "mr-8 bg-slate-800 text-gray-200"
                     }
                   `}
                 >
                   <ReactMarkdown>
-                    {message.text}
+                    {
+                      message.text
+                    }
                   </ReactMarkdown>
                 </div>
               )
             )}
 
             {scheduleStep ===
-              "dateConfirm" && (
+              "date" && (
               <div
                 className="
-                  mr-8
-                  flex
-                  flex-wrap
-                  gap-2
+                  rounded-2xl
+                  border
+                  border-cyan-400/20
+                  bg-slate-900
+                  p-4
                 "
               >
+                <div
+                  className="
+                    mb-4
+                    flex
+                    items-center
+                    justify-between
+                  "
+                >
+                  <button
+                    onClick={
+                      previousMonth
+                    }
+                    disabled={
+                      !canGoPreviousMonth()
+                    }
+                    className="
+                      rounded-lg
+                      border
+                      border-blue-400/20
+                      p-2
+                      text-blue-300
+                      transition
+                      hover:bg-blue-600
+                      hover:text-white
+                      disabled:cursor-not-allowed
+                      disabled:opacity-25
+                    "
+                  >
+                    <ChevronLeft
+                      size={18}
+                    />
+                  </button>
+
+                  <div className="text-center">
+                    <p className="font-semibold text-white">
+                      {
+                        monthTitle
+                      }
+                    </p>
+
+                    <p className="text-[11px] text-gray-500">
+                      Select a
+                      weekday
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={
+                      nextMonth
+                    }
+                    className="
+                      rounded-lg
+                      border
+                      border-blue-400/20
+                      p-2
+                      text-blue-300
+                      transition
+                      hover:bg-blue-600
+                      hover:text-white
+                    "
+                  >
+                    <ChevronRight
+                      size={18}
+                    />
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-7 gap-1">
+                  {WEEKDAYS.map(
+                    (weekday) => (
+                      <div
+                        key={
+                          weekday
+                        }
+                        className="
+                          py-1
+                          text-center
+                          text-[11px]
+                          font-semibold
+                          text-gray-500
+                        "
+                      >
+                        {
+                          weekday
+                        }
+                      </div>
+                    )
+                  )}
+
+                  {calendarDays.map(
+                    (
+                      date,
+                      index
+                    ) => {
+                      if (!date) {
+                        return (
+                          <div
+                            key={`blank-${index}`}
+                            className="aspect-square"
+                          />
+                        );
+                      }
+
+                      const disabled =
+                        isPastDate(
+                          date
+                        ) ||
+                        isWeekend(
+                          date
+                        );
+
+                      const selected =
+                        isSelectedDate(
+                          date
+                        );
+
+                      const today =
+                        isToday(
+                          date
+                        );
+
+                      return (
+                        <button
+                          key={formatDateYYYYMMDD(
+                            date
+                          )}
+                          type="button"
+                          disabled={
+                            disabled
+                          }
+                          onClick={() =>
+                            selectCalendarDate(
+                              date
+                            )
+                          }
+                          className={`
+                            aspect-square
+                            rounded-lg
+                            text-xs
+                            font-medium
+                            transition
+
+                            ${
+                              selected
+                                ? "bg-blue-600 text-white ring-2 ring-cyan-400"
+                                : today &&
+                                  !disabled
+                                ? "border border-cyan-400/60 bg-cyan-500/10 text-cyan-200"
+                                : disabled
+                                ? "cursor-not-allowed text-gray-700"
+                                : "border border-white/5 bg-slate-800 text-gray-200 hover:border-cyan-400 hover:bg-cyan-500/15 hover:text-white"
+                            }
+                          `}
+                        >
+                          {
+                            date.getDate()
+                          }
+                        </button>
+                      );
+                    }
+                  )}
+                </div>
+
+                <div
+                  className="
+                    mt-4
+                    flex
+                    items-start
+                    gap-2
+                    rounded-lg
+                    bg-slate-950/70
+                    p-3
+                    text-xs
+                    text-gray-400
+                  "
+                >
+                  <Calendar
+                    size={14}
+                    className="mt-0.5 shrink-0 text-cyan-400"
+                  />
+
+                  <span>
+                    Monday–Friday
+                    • 9:00
+                    AM–5:00 PM
+                    Mountain Time.
+                    Available times
+                    are checked
+                    after you select
+                    a date.
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {scheduleStep ===
+              "dateConfirm" && (
+              <div className="mr-8 flex flex-wrap gap-2">
                 <button
                   onClick={
                     confirmSelectedDate
@@ -1039,8 +1622,8 @@ You can say **today**, **tomorrow**, **Friday**, **next Monday**, or enter a spe
                     gap-2
                     rounded-lg
                     bg-green-600
-                    px-5
-                    py-3
+                    px-4
+                    py-2.5
                     text-sm
                     font-semibold
                     text-white
@@ -1051,7 +1634,8 @@ You can say **today**, **tomorrow**, **Friday**, **next Monday**, or enter a spe
                   <Check
                     size={16}
                   />
-                  Yes, Check Availability
+                  Check
+                  Availability
                 </button>
 
                 <button
@@ -1065,14 +1649,15 @@ You can say **today**, **tomorrow**, **Friday**, **next Monday**, or enter a spe
                     rounded-lg
                     border
                     border-gray-600
-                    px-5
-                    py-3
+                    px-4
+                    py-2.5
                     text-sm
                     text-gray-300
                     hover:bg-slate-800
                   "
                 >
-                  Choose Another Date
+                  Choose Another
+                  Date
                 </button>
               </div>
             )}
@@ -1083,7 +1668,6 @@ You can say **today**, **tomorrow**, **Friday**, **next Monday**, or enter a spe
                 0 && (
                 <div
                   className="
-                    mr-8
                     rounded-xl
                     border
                     border-cyan-400/20
@@ -1096,16 +1680,53 @@ You can say **today**, **tomorrow**, **Friday**, **next Monday**, or enter a spe
                       mb-3
                       flex
                       items-center
-                      gap-2
-                      text-sm
-                      font-semibold
-                      text-cyan-300
+                      justify-between
+                      gap-3
                     "
                   >
-                    <Calendar
-                      size={16}
-                    />
-                    Available Times
+                    <div
+                      className="
+                        flex
+                        items-center
+                        gap-2
+                        text-sm
+                        font-semibold
+                        text-cyan-300
+                      "
+                    >
+                      <Calendar
+                        size={16}
+                      />
+
+                      Available
+                      Times
+                    </div>
+
+                    <button
+                      onClick={
+                        changeSelectedDate
+                      }
+                      disabled={
+                        loading
+                      }
+                      className="
+                        shrink-0
+                        rounded-lg
+                        border
+                        border-cyan-400/40
+                        px-3
+                        py-1.5
+                        text-xs
+                        font-medium
+                        text-cyan-300
+                        transition
+                        hover:bg-cyan-600
+                        hover:text-white
+                        disabled:opacity-50
+                      "
+                    >
+                      ← Change Date
+                    </button>
                   </div>
 
                   <div
@@ -1117,7 +1738,9 @@ You can say **today**, **tomorrow**, **Friday**, **next Monday**, or enter a spe
                     "
                   >
                     {availableSlots.map(
-                      (slot) => (
+                      (
+                        slot
+                      ) => (
                         <button
                           key={
                             slot.start
@@ -1150,29 +1773,17 @@ You can say **today**, **tomorrow**, **Friday**, **next Monday**, or enter a spe
                     )}
                   </div>
 
-                  <p
-                    className="
-                      mt-3
-                      text-xs
-                      text-gray-500
-                    "
-                  >
+                  <p className="mt-3 text-xs text-gray-500">
                     Mountain Time •
-                    30-minute meeting
+                    30-minute
+                    meeting
                   </p>
                 </div>
               )}
 
             {scheduleStep ===
               "confirm" && (
-              <div
-                className="
-                  mr-8
-                  flex
-                  flex-wrap
-                  gap-2
-                "
-              >
+              <div className="mr-8 flex flex-wrap gap-2">
                 <button
                   onClick={
                     confirmBooking
@@ -1186,8 +1797,8 @@ You can say **today**, **tomorrow**, **Friday**, **next Monday**, or enter a spe
                     gap-2
                     rounded-lg
                     bg-green-600
-                    px-5
-                    py-3
+                    px-4
+                    py-2.5
                     text-sm
                     font-semibold
                     text-white
@@ -1202,44 +1813,25 @@ You can say **today**, **tomorrow**, **Friday**, **next Monday**, or enter a spe
                 </button>
 
                 <button
-                  onClick={() => {
-                    setScheduleStep(
-                      "date"
-                    );
-
-                    setAvailableSlots(
-                      []
-                    );
-
-                    setBooking(
-                      (prev) => ({
-                        ...prev,
-                        date: "",
-                        dateDisplay:
-                          "",
-                        start: "",
-                        end: "",
-                        displayTime:
-                          "",
-                      })
-                    );
-
-                    addAIMessage(
-                      "No problem. Please choose another date."
-                    );
-                  }}
+                  onClick={
+                    changeSelectedDate
+                  }
+                  disabled={
+                    loading
+                  }
                   className="
                     rounded-lg
                     border
                     border-gray-600
-                    px-5
-                    py-3
+                    px-4
+                    py-2.5
                     text-sm
                     text-gray-300
                     hover:bg-slate-800
                   "
                 >
-                  Choose Another Time
+                  Change Date /
+                  Time
                 </button>
               </div>
             )}
@@ -1255,11 +1847,16 @@ You can say **today**, **tomorrow**, **Friday**, **next Monday**, or enter a spe
                   text-gray-300
                 "
               >
-                Abhilash AI is working...
+                Abhilash AI is
+                working...
               </div>
             )}
 
-            <div ref={messagesEndRef} />
+            <div
+              ref={
+                messagesEndRef
+              }
+            />
           </div>
 
           <div
@@ -1354,7 +1951,10 @@ You can say **today**, **tomorrow**, **Friday**, **next Monday**, or enter a spe
                 disabled:opacity-40
               "
             >
-              <Calendar size={13} />
+              <Calendar
+                size={13}
+              />
+
               Schedule Meeting
             </button>
           </div>
@@ -1413,7 +2013,7 @@ You can say **today**, **tomorrow**, **Friday**, **next Monday**, or enter a spe
                   ? "Reason for connecting..."
                   : scheduleStep ===
                     "date"
-                  ? "Today, tomorrow, Friday..."
+                  ? "Or type tomorrow, Friday..."
                   : scheduleStep ===
                     "dateConfirm"
                   ? "Confirm the date above..."
@@ -1426,14 +2026,16 @@ You can say **today**, **tomorrow**, **Friday**, **next Monday**, or enter a spe
                   : "Ask about Abhilash..."
               }
               className="
+                min-w-0
                 flex-1
                 rounded-xl
                 bg-slate-800
                 px-4
-                py-4
+                py-3
                 text-sm
                 text-white
                 outline-none
+                placeholder:text-gray-500
                 disabled:cursor-not-allowed
                 disabled:opacity-50
               "
@@ -1461,6 +2063,7 @@ You can say **today**, **tomorrow**, **Friday**, **next Monday**, or enter a spe
                 disabled:cursor-not-allowed
                 disabled:opacity-50
               "
+              aria-label="Send message"
             >
               <Send
                 size={18}

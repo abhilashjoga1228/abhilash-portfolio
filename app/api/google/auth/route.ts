@@ -26,12 +26,18 @@ export async function GET() {
     const scopes = [
       "https://www.googleapis.com/auth/calendar.freebusy",
       "https://www.googleapis.com/auth/calendar.events",
+      "https://www.googleapis.com/auth/gmail.send",
     ];
 
     const authUrl = oauth2Client.generateAuthUrl({
       access_type: "offline",
+
+      // Forces Google to show consent again so we can obtain
+      // a refresh token containing the new Gmail permission.
       prompt: "consent",
+
       include_granted_scopes: true,
+
       scope: scopes,
     });
 
@@ -41,7 +47,8 @@ export async function GET() {
 
     return NextResponse.json(
       {
-        error: "Unable to start Google Calendar authorization.",
+        error:
+          "Unable to start Google Calendar and Gmail authorization.",
       },
       { status: 500 }
     );

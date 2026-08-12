@@ -35,7 +35,7 @@ const experiences = [
     company: "Swire Coca-Cola",
     logo: "/Logos/swire.jpg",
     role: "Business Intelligence Analyst",
-    duration: "Jul 2023 - Mar 2026",
+    duration: "Feb 2023 - Mar 2026",
 
     description:
       "Delivered enterprise business intelligence, logistics analytics, cloud data modernization, and automation solutions supporting operational, financial, and commercial decision-making.",

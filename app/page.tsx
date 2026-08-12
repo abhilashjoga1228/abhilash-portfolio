@@ -7,6 +7,7 @@ import Footer from "./components/Footer";
 import AnimatedBackground from "./components/AnimatedBackground";
 import Impact from "./components/Impact";
 import ChatBot from "./components/ChatBot";
+import MyStory from "./components/MyStory";
 
 export default function Home() {
   const coreSkills = [
@@ -27,7 +28,9 @@ export default function Home() {
         <AnimatedBackground />
       </div>
 
-      {/* HERO */}
+      {/* =====================================================
+          HERO
+      ===================================================== */}
       <section
         id="home"
         className="relative z-10 flex min-h-screen items-center overflow-hidden px-6 pb-16 pt-28 md:px-12 lg:px-20"
@@ -111,7 +114,7 @@ export default function Home() {
               {/* Glow */}
               <div className="absolute -inset-8 rounded-full bg-blue-500/10 blur-3xl" />
 
-              <div className="relative rounded-3xl border border-blue-400/30 bg-slate-900/60 p-7 backdrop-blur-xl shadow-[0_0_60px_rgba(59,130,246,0.12)]">
+              <div className="relative rounded-3xl border border-blue-400/30 bg-slate-900/60 p-7 shadow-[0_0_60px_rgba(59,130,246,0.12)] backdrop-blur-xl">
                 <div className="overflow-hidden rounded-3xl border border-blue-400/30">
                   <img
                     src="/abhilash.jpg"
@@ -139,7 +142,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* MAIN SECTIONS */}
+      {/* =====================================================
+          MAIN SECTIONS
+      ===================================================== */}
       <div className="relative z-10">
         <Impact />
 
@@ -147,12 +152,20 @@ export default function Home() {
 
         <Experience />
 
+        {/* Personal story teaser */}
+        <MyStory />
+
         <Projects />
 
         <Certifications />
 
-        {/* CONTACT */}
-        <section id="contact" className="px-6 py-24">
+        {/* ===================================================
+            CONTACT
+        =================================================== */}
+        <section
+          id="contact"
+          className="px-6 py-24"
+        >
           <div className="mx-auto max-w-5xl">
             <div className="relative overflow-hidden rounded-3xl border border-blue-400/30 bg-slate-900/50 p-8 text-center backdrop-blur-xl md:p-12">
               <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />
@@ -173,7 +186,7 @@ export default function Home() {
                 </p>
 
                 <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-gray-500">
-                  Explore my projects, review my experience, ask Abhilash AI a
+                  Explore my projects, review my experience, ask AbhI a
                   question, or schedule a conversation directly through the
                   portfolio assistant.
                 </p>
@@ -214,9 +227,9 @@ export default function Home() {
 
                 <div className="mt-8 border-t border-blue-400/10 pt-6">
                   <p className="text-sm text-gray-500">
-                    You can also use the AI assistant in the bottom-right corner
-                    to explore my experience, analyze a job description, or
-                    schedule a 30-minute meeting.
+                    You can also use AbhI in the bottom-right corner to explore
+                    my experience, analyze a job description, or schedule a
+                    30-minute meeting.
                   </p>
                 </div>
               </div>

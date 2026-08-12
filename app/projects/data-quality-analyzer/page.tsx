@@ -1,6 +1,8 @@
 "use client";
 
+import type React from "react";
 import {
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -13,8 +15,6 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  Line,
-  LineChart,
   ResponsiveContainer,
   Scatter,
   ScatterChart,
@@ -27,10 +27,7 @@ import {
    TYPES
 ========================================================= */
 
-type DataRow = Record<
-  string,
-  string | number | null
->;
+type DataRow = Record<string, string | number | null>;
 
 type ColumnType =
   | "Number"
@@ -83,7 +80,6 @@ type ColumnProfile = {
 
   inconsistentGroups?: {
     normalized: string;
-
     variants: {
       value: string;
       count: number;
@@ -135,7 +131,6 @@ type ExcelSheet = {
   columnCount: number;
 
   density: number;
-
   score: number;
 };
 
@@ -157,8 +152,7 @@ type PdfAnalysis = {
   characterCount: number;
   sentenceCount: number;
 
-  pageData:
-    PdfPageData[];
+  pageData: PdfPageData[];
 
   topTerms: {
     term: string;
@@ -182,7 +176,15 @@ type AiAction =
    SETTINGS
 ========================================================= */
 
-const DAILY_AI_LIMIT = 10;
+const DAILY_AI_LIMIT = 50;
+
+/*
+  Keep 50 while testing.
+
+  Before public launch change this to:
+
+  const DAILY_AI_LIMIT = 5;
+*/
 
 /* =========================================================
    SAMPLE DATA
@@ -190,74 +192,55 @@ const DAILY_AI_LIMIT = 10;
 
 const SAMPLE_DATA: DataRow[] = [
   {
-    Order_ID:
-      "ORD-1001",
-    Customer_ID:
-      "CUS-001",
-    Order_Date:
-      "2026-07-01",
+    Order_ID: "ORD-1001",
+    Customer_ID: "CUS-001",
+    Order_Date: "2026-07-01",
     Region: "West",
     Product: "Laptop",
     Quantity: 2,
     Revenue: 2598,
     Profit: 467.64,
-    Email:
-      "customer1@example.com",
-    Status:
-      "Completed",
+    Email: "customer1@example.com",
+    Status: "Completed",
   },
 
   {
-    Order_ID:
-      "ORD-1002",
-    Customer_ID:
-      "CUS-002",
-    Order_Date:
-      "2026-07-02",
+    Order_ID: "ORD-1002",
+    Customer_ID: "CUS-002",
+    Order_Date: "2026-07-02",
     Region: "South",
     Product: "Monitor",
     Quantity: 3,
     Revenue: 1047,
     Profit: 230.34,
-    Email:
-      "customer2@example.com",
-    Status:
-      "Completed",
+    Email: "customer2@example.com",
+    Status: "Completed",
   },
 
   {
-    Order_ID:
-      "ORD-1003",
+    Order_ID: "ORD-1003",
     Customer_ID: null,
-    Order_Date:
-      "INVALID_DATE",
+    Order_Date: "INVALID_DATE",
     Region: "west",
-    Product:
-      "Keyboard",
+    Product: "Keyboard",
     Quantity: 75,
     Revenue: -356,
     Profit: 110.36,
     Email: null,
-    Status:
-      "Returned",
+    Status: "Returned",
   },
 
   {
-    Order_ID:
-      "ORD-1002",
-    Customer_ID:
-      "CUS-002",
-    Order_Date:
-      "2026-07-02",
+    Order_ID: "ORD-1002",
+    Customer_ID: "CUS-002",
+    Order_Date: "2026-07-02",
     Region: "South",
     Product: "Monitor",
     Quantity: 3,
     Revenue: 1047,
     Profit: 230.34,
-    Email:
-      "customer2@example.com",
-    Status:
-      "Completed",
+    Email: "customer2@example.com",
+    Status: "Completed",
   },
 ];
 
@@ -265,9 +248,7 @@ const SAMPLE_DATA: DataRow[] = [
    GENERAL HELPERS
 ========================================================= */
 
-function isMissing(
-  value: unknown
-) {
+function isMissing(value: unknown) {
   if (
     value === null ||
     value === undefined
@@ -287,26 +268,17 @@ function isMissing(
     "n/a",
     "na",
     "nan",
-  ].includes(
-    normalized
-  );
+  ].includes(normalized);
 }
 
-function numericString(
-  value: unknown
-) {
+function numericString(value: unknown) {
   return String(value)
-    .replace(
-      /[$,%]/g,
-      ""
-    )
+    .replace(/[$,%]/g, "")
     .replace(/,/g, "")
     .trim();
 }
 
-function isNumeric(
-  value: unknown
-) {
+function isNumeric(value: unknown) {
   if (isMissing(value)) {
     return false;
   }
@@ -322,17 +294,13 @@ function isNumeric(
   );
 }
 
-function toNumber(
-  value: unknown
-) {
+function toNumber(value: unknown) {
   return Number(
     numericString(value)
   );
 }
 
-function isBoolean(
-  value: unknown
-) {
+function isBoolean(value: unknown) {
   if (isMissing(value)) {
     return false;
   }
@@ -351,9 +319,7 @@ function isBoolean(
   );
 }
 
-function looksLikeDate(
-  value: unknown
-) {
+function looksLikeDate(value: unknown) {
   if (isMissing(value)) {
     return false;
   }
@@ -371,31 +337,23 @@ function looksLikeDate(
   );
 }
 
-function isValidDate(
-  value: unknown
-) {
+function isValidDate(value: unknown) {
   return (
     looksLikeDate(value) &&
     !Number.isNaN(
-      Date.parse(
-        String(value)
-      )
+      Date.parse(String(value))
     )
   );
 }
 
-function dateColumnName(
-  name: string
-) {
+function dateColumnName(name: string) {
   const n =
     name.toLowerCase();
 
   return (
     n.includes("date") ||
     n.includes("time") ||
-    n.includes(
-      "timestamp"
-    )
+    n.includes("timestamp")
   );
 }
 
@@ -414,21 +372,15 @@ function detectType(
   }
 
   const numberRatio =
-    valid.filter(
-      isNumeric
-    ).length /
+    valid.filter(isNumeric).length /
     valid.length;
 
   const booleanRatio =
-    valid.filter(
-      isBoolean
-    ).length /
+    valid.filter(isBoolean).length /
     valid.length;
 
   const dateRatio =
-    valid.filter(
-      isValidDate
-    ).length /
+    valid.filter(isValidDate).length /
     valid.length;
 
   if (
@@ -460,13 +412,9 @@ function detectType(
 }
 
 function normalizeRow(
-  row: Record<
-    string,
-    unknown
-  >
+  row: Record<string, unknown>
 ): DataRow {
-  const output:
-    DataRow = {};
+  const output: DataRow = {};
 
   Object.entries(row).forEach(
     ([key, value]) => {
@@ -477,27 +425,18 @@ function normalizeRow(
         return;
       }
 
-      if (
-        isMissing(value)
-      ) {
-        output[
-          cleanKey
-        ] = null;
+      if (isMissing(value)) {
+        output[cleanKey] =
+          null;
 
         return;
       }
 
-      if (
-        isNumeric(value)
-      ) {
-        output[
-          cleanKey
-        ] =
+      if (isNumeric(value)) {
+        output[cleanKey] =
           toNumber(value);
       } else {
-        output[
-          cleanKey
-        ] =
+        output[cleanKey] =
           String(value).trim();
       }
     }
@@ -506,21 +445,16 @@ function normalizeRow(
   return output;
 }
 
-function formatNumber(
-  number: number
-) {
+function formatNumber(number: number) {
   return new Intl.NumberFormat(
     "en-US",
     {
-      maximumFractionDigits:
-        2,
+      maximumFractionDigits: 2,
     }
   ).format(number);
 }
 
-function clamp(
-  value: number
-) {
+function clamp(value: number) {
   return Math.max(
     0,
     Math.min(
@@ -530,9 +464,7 @@ function clamp(
   );
 }
 
-function median(
-  numbers: number[]
-) {
+function median(numbers: number[]) {
   if (!numbers.length) {
     return 0;
   }
@@ -552,12 +484,8 @@ function median(
     0
   ) {
     return (
-      (sorted[
-        middle - 1
-      ] +
-        sorted[
-          middle
-        ]) /
+      (sorted[middle - 1] +
+        sorted[middle]) /
       2
     );
   }
@@ -565,13 +493,8 @@ function median(
   return sorted[middle];
 }
 
-function formatFileSize(
-  bytes: number
-) {
-  if (
-    bytes <
-    1024
-  ) {
+function formatFileSize(bytes: number) {
+  if (bytes < 1024) {
     return `${bytes} B`;
   }
 
@@ -606,9 +529,7 @@ function removeEmptyColumns(
       new Set(
         rows.flatMap(
           (row) =>
-            Object.keys(
-              row
-            )
+            Object.keys(row)
         )
       )
     );
@@ -626,14 +547,12 @@ function removeEmptyColumns(
 
   return rows.map(
     (row) => {
-      const cleaned:
-        DataRow = {};
+      const cleaned: DataRow =
+        {};
 
       populatedColumns.forEach(
         (column) => {
-          cleaned[
-            column
-          ] =
+          cleaned[column] =
             row[column] ??
             null;
         }
@@ -661,9 +580,7 @@ function calculateSheetScore(
       new Set(
         rows.flatMap(
           (row) =>
-            Object.keys(
-              row
-            )
+            Object.keys(row)
         )
       )
     );
@@ -734,16 +651,11 @@ function workbookSheets(
   return workbook.SheetNames.map(
     (name) => {
       const sheet =
-        workbook.Sheets[
-          name
-        ];
+        workbook.Sheets[name];
 
       const raw =
         XLSX.utils.sheet_to_json<
-          Record<
-            string,
-            unknown
-          >
+          Record<string, unknown>
         >(sheet, {
           defval: null,
           raw: false,
@@ -751,17 +663,13 @@ function workbookSheets(
 
       const normalized =
         raw
-          .map(
-            normalizeRow
-          )
+          .map(normalizeRow)
           .filter((row) =>
             Object.values(
               row
             ).some(
               (value) =>
-                !isMissing(
-                  value
-                )
+                !isMissing(value)
             )
           );
 
@@ -799,20 +707,14 @@ function duplicateCount(
   rows.forEach(
     (row) => {
       const signature =
-        JSON.stringify(
-          row
-        );
+        JSON.stringify(row);
 
       if (
-        seen.has(
-          signature
-        )
+        seen.has(signature)
       ) {
         duplicates++;
       } else {
-        seen.add(
-          signature
-        );
+        seen.add(signature);
       }
     }
   );
@@ -821,7 +723,7 @@ function duplicateCount(
 }
 
 /* =========================================================
-   CATEGORY INCONSISTENCY
+   CATEGORY CONSISTENCY
 ========================================================= */
 
 function categoryInconsistencies(
@@ -830,17 +732,12 @@ function categoryInconsistencies(
   const map =
     new Map<
       string,
-      Map<
-        string,
-        number
-      >
+      Map<string, number>
     >();
 
   values.forEach(
     (value) => {
-      if (
-        isMissing(value)
-      ) {
+      if (isMissing(value)) {
         return;
       }
 
@@ -851,9 +748,7 @@ function categoryInconsistencies(
         original.toLowerCase();
 
       if (
-        !map.has(
-          normalized
-        )
+        !map.has(normalized)
       ) {
         map.set(
           normalized,
@@ -862,9 +757,7 @@ function categoryInconsistencies(
       }
 
       const variants =
-        map.get(
-          normalized
-        )!;
+        map.get(normalized)!;
 
       variants.set(
         original,
@@ -880,8 +773,7 @@ function categoryInconsistencies(
   )
     .filter(
       ([, variants]) =>
-        variants.size >
-        1
+        variants.size > 1
     )
     .map(
       ([
@@ -972,8 +864,7 @@ function buildProfiles(
       let validCount =
         populated.length;
 
-      let invalidCount =
-        0;
+      let invalidCount = 0;
 
       if (
         type === "Date"
@@ -1004,11 +895,9 @@ function buildProfiles(
         | number
         | undefined;
 
-      let negativeCount =
-        0;
+      let negativeCount = 0;
 
-      let outlierCount =
-        0;
+      let outlierCount = 0;
 
       let lowerBound:
         | number
@@ -1019,17 +908,12 @@ function buildProfiles(
         | undefined;
 
       if (
-        type ===
-        "Number"
+        type === "Number"
       ) {
         const numbers =
           populated
-            .filter(
-              isNumeric
-            )
-            .map(
-              toNumber
-            );
+            .filter(isNumeric)
+            .map(toNumber);
 
         if (
           numbers.length
@@ -1057,9 +941,7 @@ function buildProfiles(
             numbers.length;
 
           med =
-            median(
-              numbers
-            );
+            median(numbers);
 
           negativeCount =
             numbers.filter(
@@ -1100,13 +982,11 @@ function buildProfiles(
 
             lowerBound =
               q1 -
-              1.5 *
-                iqr;
+              1.5 * iqr;
 
             upperBound =
               q3 +
-              1.5 *
-                iqr;
+              1.5 * iqr;
 
             outlierCount =
               numbers.filter(
@@ -1205,13 +1085,11 @@ function buildProfiles(
 }
 
 /* =========================================================
-   QUALITY ISSUES
+   ISSUES
 ========================================================= */
 
 function createIssues(
-  rows: DataRow[],
-  profiles:
-    ColumnProfile[],
+  profiles: ColumnProfile[],
   duplicates: number
 ): QualityIssue[] {
   const issues:
@@ -1270,8 +1148,7 @@ function createIssues(
             "missing",
         });
       } else if (
-        profile.missing >
-        0
+        profile.missing > 0
       ) {
         issues.push({
           id: `${profile.name}-missing`,
@@ -1448,12 +1325,8 @@ function createIssues(
 
   return issues.sort(
     (a, b) =>
-      order[
-        b.severity
-      ] -
-      order[
-        a.severity
-      ]
+      order[b.severity] -
+      order[a.severity]
   );
 }
 
@@ -1463,8 +1336,7 @@ function createIssues(
 
 function scoreQuality(
   rows: DataRow[],
-  profiles:
-    ColumnProfile[],
+  profiles: ColumnProfile[],
   duplicates: number,
   issues: QualityIssue[]
 ): QualityDimensions {
@@ -1573,8 +1445,7 @@ function scoreQuality(
           40
     );
 
-  let anomalyPenalty =
-    0;
+  let anomalyPenalty = 0;
 
   issues.forEach(
     (issue) => {
@@ -1668,7 +1539,7 @@ function scoreQuality(
 }
 
 /* =========================================================
-   PDF
+   PDF HELPERS
 ========================================================= */
 
 const PDF_STOP_WORDS =
@@ -1700,11 +1571,16 @@ const PDF_STOP_WORDS =
     "experiences",
     "company",
     "business",
+    "message",
+    "follow",
+    "promoted",
+    "show",
+    "privacy",
+    "settings",
+    "account",
   ]);
 
-function topTerms(
-  text: string
-) {
+function topTerms(text: string) {
   const words =
     text
       .toLowerCase()
@@ -1715,29 +1591,22 @@ function topTerms(
       .split(/\s+/)
       .filter(
         (word) =>
-          word.length >=
-            4 &&
+          word.length >= 4 &&
           !PDF_STOP_WORDS.has(
             word
           ) &&
-          !/^\d+$/.test(
-            word
-          )
+          !/^\d+$/.test(word)
       );
 
   const counts =
-    new Map<
-      string,
-      number
-    >();
+    new Map<string, number>();
 
   words.forEach(
     (word) => {
       counts.set(
         word,
-        (counts.get(
-          word
-        ) ?? 0) + 1
+        (counts.get(word) ??
+          0) + 1
       );
     }
   );
@@ -1753,11 +1622,15 @@ function topTerms(
     )
     .sort(
       (a, b) =>
-        b.count -
-        a.count
+        b.count - a.count
     )
     .slice(0, 12);
 }
+
+/* =========================================================
+   PDF READER
+   IMPORTANT: MOBILE SAFARI FIX
+========================================================= */
 
 async function readPdf(
   file: File
@@ -1767,16 +1640,29 @@ async function readPdf(
       "pdfjs-dist"
     );
 
-  pdfjs.GlobalWorkerOptions.workerSrc =
-    `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+  /*
+    IMPORTANT:
+    Worker is now hosted locally from /public.
 
-  const document =
-    await pdfjs.getDocument({
+    This avoids cross-origin worker problems
+    on Safari / iPhone.
+  */
+  pdfjs.GlobalWorkerOptions.workerSrc =
+    "/pdf.worker.min.mjs";
+
+  const arrayBuffer =
+    await file.arrayBuffer();
+
+  const loadingTask =
+    pdfjs.getDocument({
       data:
         new Uint8Array(
-          await file.arrayBuffer()
+          arrayBuffer
         ),
-    }).promise;
+    });
+
+  const document =
+    await loadingTask.promise;
 
   const pages:
     PdfPageData[] = [];
@@ -1800,16 +1686,22 @@ async function readPdf(
 
     const text =
       content.items
-        .map((item) =>
-          "str" in item
-            ? item.str
-            : ""
-        )
+        .map((item) => {
+          if (
+            typeof item ===
+              "object" &&
+            item !== null &&
+            "str" in item &&
+            typeof item.str ===
+              "string"
+          ) {
+            return item.str;
+          }
+
+          return "";
+        })
         .join(" ")
-        .replace(
-          /\s+/g,
-          " "
-        )
+        .replace(/\s+/g, " ")
         .trim();
 
     pages.push({
@@ -1820,9 +1712,10 @@ async function readPdf(
 
       words:
         text
-          ? text.split(
-              /\s+/
-            ).length
+          ? text
+              .split(/\s+/)
+              .filter(Boolean)
+              .length
           : 0,
     });
 
@@ -1833,6 +1726,11 @@ async function readPdf(
     fullText
       .join("\n\n")
       .trim();
+
+  const sentenceMatches =
+    text.match(
+      /[.!?]+/g
+    );
 
   return {
     fileName:
@@ -1850,20 +1748,19 @@ async function readPdf(
 
     wordCount:
       text
-        ? text.split(
-            /\s+/
-          ).length
+        ? text
+            .split(/\s+/)
+            .filter(Boolean)
+            .length
         : 0,
 
     characterCount:
       text.length,
 
     sentenceCount:
-      (
-        text.match(
-          /[.!?]+/g
-        ) ?? []
-      ).length,
+      sentenceMatches
+        ? sentenceMatches.length
+        : 0,
 
     pageData: pages,
 
@@ -1920,8 +1817,7 @@ function currentAiUsage() {
 
 function addAiUsage() {
   const next =
-    currentAiUsage() +
-    1;
+    currentAiUsage() + 1;
 
   localStorage.setItem(
     "datalens-ai-usage",
@@ -1981,9 +1877,7 @@ export default function DataLensPage() {
     excelSheets,
     setExcelSheets,
   ] =
-    useState<ExcelSheet[]>(
-      []
-    );
+    useState<ExcelSheet[]>([]);
 
   const [
     selectedSheet,
@@ -2068,6 +1962,12 @@ export default function DataLensPage() {
     setAiUsage,
   ] = useState(0);
 
+  useEffect(() => {
+    setAiUsage(
+      currentAiUsage()
+    );
+  }, []);
+
   /* =====================================================
      ANALYSIS
   ===================================================== */
@@ -2079,9 +1979,7 @@ export default function DataLensPage() {
           new Set(
             rows.flatMap(
               (row) =>
-                Object.keys(
-                  row
-                )
+                Object.keys(row)
             )
           )
         ),
@@ -2091,9 +1989,7 @@ export default function DataLensPage() {
   const duplicates =
     useMemo(
       () =>
-        duplicateCount(
-          rows
-        ),
+        duplicateCount(rows),
       [rows]
     );
 
@@ -2104,19 +2000,20 @@ export default function DataLensPage() {
           rows,
           columns
         ),
-      [rows, columns]
+      [
+        rows,
+        columns,
+      ]
     );
 
   const issues =
     useMemo(
       () =>
         createIssues(
-          rows,
           profiles,
           duplicates
         ),
       [
-        rows,
         profiles,
         duplicates,
       ]
@@ -2159,7 +2056,7 @@ export default function DataLensPage() {
       : 0;
 
   /* =====================================================
-     RESET AI WHEN FILE CHANGES
+     AI RESET
   ===================================================== */
 
   function resetAi() {
@@ -2193,9 +2090,7 @@ export default function DataLensPage() {
               row
             ).some(
               (value) =>
-                !isMissing(
-                  value
-                )
+                !isMissing(value)
             )
         )
       );
@@ -2216,9 +2111,7 @@ export default function DataLensPage() {
       source
     );
 
-    setMode(
-      "dataset"
-    );
+    setMode("dataset");
 
     setFileName(name);
     setFileSize(size);
@@ -2235,7 +2128,7 @@ export default function DataLensPage() {
   }
 
   /* =====================================================
-     FILE HANDLING
+     HANDLE FILE
   ===================================================== */
 
   async function handleFile(
@@ -2244,11 +2137,6 @@ export default function DataLensPage() {
     setError("");
     setProcessing(true);
 
-    /*
-      Important:
-      fully reset old AI/file state so no previous
-      dataset answer appears beside a different file.
-    */
     resetAi();
 
     const extension =
@@ -2263,14 +2151,10 @@ export default function DataLensPage() {
         "csv"
       ) {
         Papa.parse<
-          Record<
-            string,
-            unknown
-          >
+          Record<string, unknown>
         >(file, {
           header: true,
-          skipEmptyLines:
-            true,
+          skipEmptyLines: true,
 
           complete:
             (result) => {
@@ -2302,15 +2186,21 @@ export default function DataLensPage() {
               );
             },
 
-          error: () => {
-            setError(
-              "Unable to parse CSV."
-            );
+          error:
+            (csvError) => {
+              console.error(
+                "CSV parsing error:",
+                csvError
+              );
 
-            setProcessing(
-              false
-            );
-          },
+              setError(
+                `CSV Error: ${csvError.message}`
+              );
+
+              setProcessing(
+                false
+              );
+            },
         });
 
         return;
@@ -2344,7 +2234,7 @@ export default function DataLensPage() {
 
         if (!suggested) {
           throw new Error(
-            "No worksheet found."
+            "No usable worksheet was found."
           );
         }
 
@@ -2377,21 +2267,17 @@ export default function DataLensPage() {
         "pdf"
       ) {
         const result =
-          await readPdf(
-            file
-          );
+          await readPdf(file);
 
         if (
           !result.text.trim()
         ) {
           throw new Error(
-            "No selectable PDF text found."
+            "No selectable text was found in this PDF. Scanned/image-only PDFs are not currently supported."
           );
         }
 
-        setPdfData(
-          result
-        );
+        setPdfData(result);
 
         setRows([]);
 
@@ -2410,7 +2296,10 @@ export default function DataLensPage() {
         );
 
         setPdfPage(1);
+
         setPdfSearch("");
+
+        setError("");
 
         resetAi();
 
@@ -2418,21 +2307,36 @@ export default function DataLensPage() {
       }
 
       setError(
-        "Supported files: CSV, XLSX, XLS and PDF."
+        "Supported files: CSV, XLSX, XLS and text-based PDF."
       );
     } catch (err) {
-      console.error(err);
+      /*
+        BETTER MOBILE ERROR MESSAGE
+      */
 
-      setError(
-        err instanceof
-          Error
-          ? err.message
-          : "Unable to analyze this file."
+      console.error(
+        "DataLens file processing error:",
+        err
       );
+
+      let message =
+        "Unable to analyze this file.";
+
+      if (
+        err instanceof Error
+      ) {
+        message =
+          `${err.name}: ${err.message}`;
+      } else if (
+        typeof err ===
+        "string"
+      ) {
+        message = err;
+      }
+
+      setError(message);
     } finally {
-      setProcessing(
-        false
-      );
+      setProcessing(false);
     }
   }
 
@@ -2450,13 +2354,9 @@ export default function DataLensPage() {
       return;
     }
 
-    setSelectedSheet(
-      name
-    );
+    setSelectedSheet(name);
 
-    setRows(
-      sheet.rows
-    );
+    setRows(sheet.rows);
 
     setActiveTab(
       "overview"
@@ -2472,17 +2372,14 @@ export default function DataLensPage() {
 
     setExcelSheets([]);
 
-    setSelectedSheet(
-      ""
-    );
+    setSelectedSheet("");
 
-    setSuggestedSheet(
-      ""
-    );
+    setSuggestedSheet("");
 
     setPdfData(null);
 
     setFileName("");
+
     setFileSize("");
 
     setPdfSearch("");
@@ -2493,15 +2390,10 @@ export default function DataLensPage() {
   }
 
   /* =====================================================
-     AI CONTEXT — IMPORTANT CHANGE
+     AI CONTEXT
   ===================================================== */
 
   function datasetAiContext() {
-    /*
-      We intentionally give AI enough context to infer
-      likely business meaning without sending the entire file.
-    */
-
     const categoricalExamples =
       profiles
         .filter(
@@ -2535,15 +2427,10 @@ export default function DataLensPage() {
                     )
                     .map(
                       (value) =>
-                        String(
-                          value
-                        )
+                        String(value)
                     )
                 )
-              ).slice(
-                0,
-                10
-              ),
+              ).slice(0, 10),
           })
         );
 
@@ -2570,9 +2457,6 @@ export default function DataLensPage() {
           columns.length,
       },
 
-      /*
-        This helps AI infer what the dataset represents.
-      */
       schema:
         columns,
 
@@ -2624,6 +2508,12 @@ export default function DataLensPage() {
 
             outlierCount:
               profile.outlierCount,
+
+            lowerBound:
+              profile.lowerBound,
+
+            upperBound:
+              profile.upperBound,
           })
         ),
 
@@ -2631,34 +2521,29 @@ export default function DataLensPage() {
         categoricalExamples,
 
       detectedIssues:
-        issues.map(
-          (issue) => ({
-            severity:
-              issue.severity,
+        issues
+          .slice(0, 20)
+          .map(
+            (issue) => ({
+              severity:
+                issue.severity,
 
-            column:
-              issue.column,
+              column:
+                issue.column,
 
-            type:
-              issue.kind,
+              type:
+                issue.kind,
 
-            title:
-              issue.title,
+              title:
+                issue.title,
 
-            description:
-              issue.description,
-          })
-        ),
+              description:
+                issue.description,
+            })
+          ),
 
-      /*
-        Slightly larger sample so it can understand
-        relationships between fields.
-      */
       sampleRows:
-        rows.slice(
-          0,
-          8
-        ),
+        rows.slice(0, 8),
     };
   }
 
@@ -2675,36 +2560,37 @@ export default function DataLensPage() {
         .split(/\W+/)
         .filter(
           (word) =>
-            word.length >=
-            4
+            word.length >= 4 &&
+            ![
+              "what",
+              "does",
+              "have",
+              "with",
+              "this",
+              "that",
+              "about",
+              "experience",
+              "document",
+              "person",
+            ].includes(word)
         );
 
     const matching =
-      pdfData.pageData.filter(
-        (page) =>
-          importantWords.some(
-            (word) =>
-              page.text
-                .toLowerCase()
-                .includes(
-                  word
-                )
+      importantWords.length
+        ? pdfData.pageData.filter(
+            (page) =>
+              importantWords.some(
+                (word) =>
+                  page.text
+                    .toLowerCase()
+                    .includes(word)
+              )
           )
-      );
+        : [];
 
-    /*
-      Broad questions:
-      provide a larger multi-page document view.
-
-      Specific questions:
-      prioritize matching pages.
-    */
     const selectedPages =
       matching.length
-        ? matching.slice(
-            0,
-            6
-          )
+        ? matching.slice(0, 6)
         : pdfData.pageData.slice(
             0,
             7
@@ -2731,13 +2617,8 @@ export default function DataLensPage() {
             (page) =>
               `PAGE ${page.page}\n${page.text}`
           )
-          .join(
-            "\n\n"
-          )
-          .slice(
-            0,
-            16000
-          ),
+          .join("\n\n")
+          .slice(0, 16000),
     };
   }
 
@@ -2753,9 +2634,7 @@ export default function DataLensPage() {
     const usage =
       currentAiUsage();
 
-    setAiUsage(
-      usage
-    );
+    setAiUsage(usage);
 
     if (
       usage >=
@@ -2803,7 +2682,8 @@ export default function DataLensPage() {
     }
 
     if (
-      action === "python"
+      action ===
+      "python"
     ) {
       question =
         "Generate Python pandas cleanup code for the detected issues.";
@@ -2841,9 +2721,7 @@ export default function DataLensPage() {
         "Find action items in this document.";
     }
 
-    if (
-      !question
-    ) {
+    if (!question) {
       setAiError(
         "Enter a question."
       );
@@ -2851,9 +2729,7 @@ export default function DataLensPage() {
       return;
     }
 
-    setAiLoading(
-      true
-    );
+    setAiLoading(true);
 
     setAiAnswer("");
 
@@ -2900,9 +2776,7 @@ export default function DataLensPage() {
       const result =
         await response.json();
 
-      if (
-        !response.ok
-      ) {
+      if (!response.ok) {
         throw new Error(
           result.error ||
             "AI request failed."
@@ -2918,15 +2792,12 @@ export default function DataLensPage() {
       );
     } catch (err) {
       setAiError(
-        err instanceof
-          Error
+        err instanceof Error
           ? err.message
           : "Unable to complete the AI request."
       );
     } finally {
-      setAiLoading(
-        false
-      );
+      setAiLoading(false);
     }
   }
 
@@ -2952,9 +2823,7 @@ export default function DataLensPage() {
         (page) =>
           page.text
             .toLowerCase()
-            .includes(
-              query
-            )
+            .includes(query)
       );
     }, [
       pdfData,
@@ -2962,19 +2831,30 @@ export default function DataLensPage() {
     ]);
 
   /* =====================================================
-     RENDER
+     UI
   ===================================================== */
 
   return (
-    <main className="min-h-screen bg-slate-950 text-white">
+    <main
+      className="min-h-screen bg-slate-950 text-white"
+      style={{
+        paddingTop:
+          "env(safe-area-inset-top)",
+        paddingBottom:
+          "env(safe-area-inset-bottom)",
+      }}
+    >
+      {/* ===================================================
+          NAV
+      =================================================== */}
+
       <nav className="border-b border-white/10">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
           <a
             href="/"
-            className="text-sm text-gray-300 hover:text-cyan-300"
+            className="text-sm text-gray-300 transition hover:text-cyan-300"
           >
-            ← Abhilash
-            Portfolio
+            ← Abhilash Portfolio
           </a>
 
           <a
@@ -2986,38 +2866,31 @@ export default function DataLensPage() {
         </div>
       </nav>
 
-      <section className="px-6 pb-12 pt-16">
+      {/* ===================================================
+          HERO
+      =================================================== */}
+
+      <section className="px-6 pb-12 pt-12 sm:pt-16">
         <div className="mx-auto max-w-7xl">
           <div className="inline-flex rounded-full border border-cyan-400/30 bg-cyan-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300">
-            Interactive Data
-            & Document
-            Intelligence
+            Interactive Data & Document Intelligence
           </div>
 
           <h1 className="mt-6 bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-300 bg-clip-text text-4xl font-bold text-transparent md:text-6xl">
-            AbhI Analyst
+            DataLens AI
           </h1>
 
-          <p className="mt-4 text-xl text-gray-200">
-            Analyze.
-            Validate.
-            Visualize. Ask.
+          <p className="mt-4 text-xl text-gray-200 md:text-2xl">
+            Analyze. Validate. Visualize. Ask.
           </p>
 
-          <p className="mt-6 max-w-4xl leading-8 text-gray-400">
-            Upload CSV,
-            Excel or PDF
-            files to understand
-            what the data
-            represents, detect
-            quality problems,
-            visualize patterns
-            and ask AI for
-            explanations or
-            remediation code.
+          <p className="mt-6 max-w-4xl text-base leading-8 text-gray-400 md:text-lg">
+            Upload CSV, Excel or PDF files to understand what the data
+            represents, detect quality problems, visualize patterns and ask
+            AI for explanations or remediation code.
           </p>
 
-          <div className="mt-6 flex flex-wrap gap-2">
+          <div className="mt-7 flex flex-wrap gap-2">
             {[
               "CSV Analysis",
               "Excel Multi-Sheet",
@@ -3033,10 +2906,8 @@ export default function DataLensPage() {
             ].map(
               (item) => (
                 <span
-                  key={
-                    item
-                  }
-                  className="rounded-full border border-blue-400/20 bg-blue-500/5 px-3 py-1.5 text-xs text-blue-300"
+                  key={item}
+                  className="rounded-full border border-blue-400/20 bg-blue-500/5 px-3 py-1.5 text-xs text-blue-300 sm:text-sm"
                 >
                   {item}
                 </span>
@@ -3050,62 +2921,53 @@ export default function DataLensPage() {
         <div className="mx-auto max-w-7xl">
 
           {/* =================================================
-              INITIAL SCREEN
+              UPLOAD
           ================================================= */}
 
           {!mode && (
-            <>
-              <div className="rounded-3xl border-2 border-dashed border-blue-400/30 bg-slate-900/40 p-12 text-center">
-                <div className="text-4xl">
-                  ↑
-                </div>
-
-                <h2 className="mt-5 text-2xl font-bold">
-                  Upload your
-                  file
-                </h2>
-
-                <p className="mt-3 text-gray-400">
-                  CSV, Excel
-                  (.xlsx/.xls)
-                  or text-based
-                  PDF
-                </p>
-
-                <div className="mt-7 flex flex-wrap justify-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      fileRef.current?.click()
-                    }
-                    disabled={
-                      processing
-                    }
-                    className="rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 px-6 py-3 font-semibold disabled:opacity-50"
-                  >
-                    {processing
-                      ? "Analyzing..."
-                      : "Choose File"}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      loadDataset(
-                        SAMPLE_DATA,
-                        "CSV",
-                        "sample-ecommerce-data.csv",
-                        "Demo dataset"
-                      )
-                    }
-                    className="rounded-xl border border-blue-400/30 px-6 py-3 text-blue-300"
-                  >
-                    Try Sample
-                    Dataset
-                  </button>
-                </div>
+            <div className="rounded-3xl border-2 border-dashed border-blue-400/30 bg-slate-900/40 px-6 py-14 text-center sm:p-12">
+              <div className="text-5xl">
+                ↑
               </div>
-            </>
+
+              <h2 className="mt-5 text-2xl font-bold">
+                Upload your file
+              </h2>
+
+              <p className="mt-3 text-gray-400">
+                CSV, Excel (.xlsx/.xls) or text-based PDF
+              </p>
+
+              <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                <button
+                  type="button"
+                  onClick={() =>
+                    fileRef.current?.click()
+                  }
+                  disabled={processing}
+                  className="w-full rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 px-6 py-3 font-semibold transition hover:opacity-90 disabled:opacity-50 sm:w-auto"
+                >
+                  {processing
+                    ? "Analyzing..."
+                    : "Choose File"}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    loadDataset(
+                      SAMPLE_DATA,
+                      "CSV",
+                      "sample-ecommerce-data.csv",
+                      "Demo dataset"
+                    )
+                  }
+                  className="w-full rounded-xl border border-blue-400/30 px-6 py-3 text-blue-300 transition hover:bg-blue-500/5 sm:w-auto"
+                >
+                  Try Sample Dataset
+                </button>
+              </div>
+            </div>
           )}
 
           <input
@@ -3146,12 +3008,8 @@ export default function DataLensPage() {
             <>
               <FileHeader
                 title={`${datasetSource} Dataset Loaded`}
-                name={
-                  fileName
-                }
-                size={
-                  fileSize
-                }
+                name={fileName}
+                size={fileSize}
                 onAnother={() =>
                   fileRef.current?.click()
                 }
@@ -3211,12 +3069,8 @@ export default function DataLensPage() {
                 )}
 
               <QualityHeader
-                quality={
-                  quality
-                }
-                rows={
-                  rows.length
-                }
+                quality={quality}
+                rows={rows.length}
                 columns={
                   columns.length
                 }
@@ -3234,7 +3088,7 @@ export default function DataLensPage() {
                 }
               />
 
-              <div className="mt-8 flex flex-wrap gap-2 border-b border-white/10 pb-4">
+              <div className="mt-8 flex gap-2 overflow-x-auto border-b border-white/10 pb-4">
                 {[
                   [
                     "overview",
@@ -3250,7 +3104,7 @@ export default function DataLensPage() {
                   ],
                   [
                     "ai",
-                    "Ask AI ✨",
+                    "Ask AbhI ✨",
                   ],
                 ].map(
                   ([
@@ -3258,24 +3112,20 @@ export default function DataLensPage() {
                     label,
                   ]) => (
                     <button
-                      key={
-                        id
-                      }
+                      key={id}
                       onClick={() =>
                         setActiveTab(
                           id as typeof activeTab
                         )
                       }
-                      className={`rounded-xl px-4 py-2 text-sm ${
+                      className={`shrink-0 rounded-xl px-4 py-2 text-sm ${
                         activeTab ===
                         id
                           ? "bg-cyan-500/15 text-cyan-300"
                           : "text-gray-400"
                       }`}
                     >
-                      {
-                        label
-                      }
+                      {label}
                     </button>
                   )
                 )}
@@ -3284,9 +3134,7 @@ export default function DataLensPage() {
               {activeTab ===
                 "overview" && (
                 <Overview
-                  rows={
-                    rows
-                  }
+                  rows={rows}
                   columns={
                     columns
                   }
@@ -3299,18 +3147,14 @@ export default function DataLensPage() {
               {activeTab ===
                 "quality" && (
                 <Issues
-                  issues={
-                    issues
-                  }
+                  issues={issues}
                 />
               )}
 
               {activeTab ===
                 "visualize" && (
                 <DataVisuals
-                  rows={
-                    rows
-                  }
+                  rows={rows}
                   profiles={
                     profiles
                   }
@@ -3373,7 +3217,7 @@ export default function DataLensPage() {
                   }
                 />
 
-                <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
                   <Metric
                     label="Pages"
                     value={String(
@@ -3496,8 +3340,7 @@ export default function DataLensPage() {
 
                 <div className="mt-8 rounded-2xl border border-blue-400/15 bg-slate-900/40 p-6">
                   <h2 className="text-xl font-bold">
-                    Search This
-                    PDF
+                    Search This PDF
                   </h2>
 
                   <input
@@ -3513,9 +3356,17 @@ export default function DataLensPage() {
                           .value
                       )
                     }
-                    placeholder="Search..."
-                    className="mt-4 w-full rounded-xl border border-blue-400/20 bg-slate-950 px-4 py-3"
+                    placeholder="Search document..."
+                    className="mt-4 w-full rounded-xl border border-blue-400/20 bg-slate-950 px-4 py-3 outline-none focus:border-cyan-400/40"
                   />
+
+                  {pdfSearch &&
+                    pdfMatches.length ===
+                      0 && (
+                      <p className="mt-3 text-sm text-gray-500">
+                        No matching pages found.
+                      </p>
+                    )}
 
                   {pdfSearch &&
                     pdfMatches.length >
@@ -3553,7 +3404,7 @@ export default function DataLensPage() {
                       Pages
                     </h3>
 
-                    <div className="mt-4 space-y-2">
+                    <div className="mt-4 flex gap-2 overflow-x-auto lg:block lg:space-y-2">
                       {pdfData.pageData.map(
                         (page) => (
                           <button
@@ -3565,7 +3416,7 @@ export default function DataLensPage() {
                                 page.page
                               )
                             }
-                            className={`w-full rounded-lg border p-3 text-left ${
+                            className={`min-w-[110px] rounded-lg border p-3 text-left lg:w-full ${
                               pdfPage ===
                               page.page
                                 ? "border-cyan-400/40 bg-cyan-500/10"
@@ -3589,15 +3440,13 @@ export default function DataLensPage() {
                     </div>
                   </div>
 
-                  <div className="rounded-2xl border border-blue-400/15 bg-slate-900/40 p-6">
+                  <div className="min-w-0 rounded-2xl border border-blue-400/15 bg-slate-900/40 p-6">
                     <h3 className="text-xl font-bold">
-                      Extracted
-                      Text —
-                      Page{" "}
+                      Extracted Text — Page{" "}
                       {pdfPage}
                     </h3>
 
-                    <div className="mt-5 max-h-[520px] overflow-y-auto rounded-xl bg-slate-950/60 p-5 text-sm leading-7 text-gray-300">
+                    <div className="mt-5 max-h-[520px] overflow-y-auto break-words rounded-xl bg-slate-950/60 p-5 text-sm leading-7 text-gray-300">
                       {
                         pdfData.pageData.find(
                           (page) =>
@@ -3758,28 +3607,28 @@ function AiPanel({
       : pdfActions;
 
   return (
-    <div className="rounded-3xl border border-purple-400/20 bg-purple-500/5 p-7">
+    <div className="rounded-3xl border border-purple-400/20 bg-purple-500/5 p-5 sm:p-7">
       <div className="flex flex-col gap-4 md:flex-row md:justify-between">
         <div>
-          <div className="text-xs uppercase tracking-[0.2em] text-purple-300">
+          <div className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-300">
             AbhI Analyst
           </div>
 
           <h2 className="mt-2 text-2xl font-bold">
             Ask AbhI Analyst
-            AI
           </h2>
 
           <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-400">
             {mode ===
             "dataset"
-              ? "DataLens can infer the likely business purpose from the schema and samples, explain quality issues, and generate remediation code."
-              : "Ask questions about the extracted PDF content."}
+              ? "AbhI can infer the likely business purpose from the schema and sample, explain data-quality issues, and generate SQL or Python remediation."
+              : "Ask AbhI anything about the extracted document content."}
           </p>
         </div>
 
-        <div className="rounded-xl border border-purple-400/20 px-4 py-3 text-sm">
-          Daily usage
+        <div className="w-fit rounded-xl border border-purple-400/20 px-4 py-3 text-sm">
+          Daily demo usage
+
           <div className="mt-1 font-bold text-purple-300">
             {usage}/
             {
@@ -3797,19 +3646,15 @@ function AiPanel({
                 item.label
               }
               type="button"
-              disabled={
-                loading
-              }
+              disabled={loading}
               onClick={() =>
                 void ask(
                   item.action
                 )
               }
-              className="rounded-xl border border-purple-400/25 bg-purple-500/5 px-4 py-2 text-sm text-purple-200 transition hover:bg-purple-500/10 disabled:opacity-50"
+              className="rounded-xl border border-purple-400/25 bg-purple-500/5 px-4 py-2 text-sm text-purple-200 transition hover:bg-purple-500/10 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {
-                item.label
-              }
+              {item.label}
             </button>
           )
         )}
@@ -3818,24 +3663,21 @@ function AiPanel({
       <textarea
         rows={4}
         maxLength={1500}
-        value={
-          question
-        }
+        value={question}
         onChange={(
           event
         ) =>
           setQuestion(
-            event.target
-              .value
+            event.target.value
           )
         }
         placeholder={
           mode ===
           "dataset"
             ? "Example: What is this dataset about and what insights could I build from it?"
-            : "Example: What experience does this person have with Microsoft Fabric?"
+            : "Ask anything about this document. Example: What experience does this person have with Microsoft Fabric?"
         }
-        className="mt-6 w-full rounded-xl border border-purple-400/20 bg-slate-950 p-4 text-sm outline-none"
+        className="mt-6 w-full rounded-xl border border-purple-400/20 bg-slate-950 p-4 text-sm outline-none focus:border-purple-400/40"
       />
 
       <div className="mt-3 flex justify-end">
@@ -3846,41 +3688,34 @@ function AiPanel({
             !question.trim()
           }
           onClick={() =>
-            void ask(
-              "custom"
-            )
+            void ask("custom")
           }
-          className="rounded-xl bg-gradient-to-r from-purple-500 to-cyan-500 px-5 py-2.5 text-sm font-semibold disabled:opacity-50"
+          className="rounded-xl bg-gradient-to-r from-purple-500 to-cyan-500 px-5 py-2.5 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading
-            ? "Analyzing..."
+            ? "AbhI is analyzing..."
             : "Ask AbhI Analyst"}
         </button>
       </div>
 
       {error && (
-        <ErrorBox
-          text={error}
-        />
+        <ErrorBox text={error} />
       )}
 
       {answer && (
-        <div className="mt-6 rounded-2xl border border-purple-400/20 bg-slate-950/70 p-6">
+        <div className="mt-6 rounded-2xl border border-purple-400/20 bg-slate-950/70 p-5 sm:p-6">
           <div className="text-xs font-semibold uppercase tracking-[0.15em] text-purple-300">
-            DataLens AI
+            AbhI Analyst
           </div>
 
-          <div className="mt-4 whitespace-pre-wrap text-sm leading-7 text-gray-300">
+          <div className="mt-4 overflow-x-auto whitespace-pre-wrap text-sm leading-7 text-gray-300">
             {answer}
           </div>
         </div>
       )}
 
       <div className="mt-5 rounded-xl border border-amber-400/15 bg-amber-500/5 p-4 text-xs leading-6 text-amber-200/80">
-        AI-generated
-        interpretations and
-        remediation code
-        should be reviewed
+        AI-generated interpretations and remediation code should be reviewed
         before production use.
       </div>
     </div>
@@ -3897,22 +3732,18 @@ function Overview({
   profiles,
 }: {
   rows: DataRow[];
-
   columns: string[];
-
-  profiles:
-    ColumnProfile[];
+  profiles: ColumnProfile[];
 }) {
   return (
     <div className="mt-8 space-y-10">
       <div>
         <h2 className="text-2xl font-bold">
-          Column
-          Profiling
+          Column Profiling
         </h2>
 
         <div className="mt-5 overflow-x-auto rounded-2xl border border-blue-400/15">
-          <table className="w-full min-w-[900px] text-left text-sm">
+          <table className="w-full min-w-[850px] text-left text-sm">
             <thead className="bg-slate-900 text-gray-400">
               <tr>
                 <th className="px-5 py-4">
@@ -4016,14 +3847,10 @@ function Overview({
                 {columns.map(
                   (column) => (
                     <th
-                      key={
-                        column
-                      }
+                      key={column}
                       className="px-4 py-4 text-gray-400"
                     >
-                      {
-                        column
-                      }
+                      {column}
                     </th>
                   )
                 )}
@@ -4039,9 +3866,7 @@ function Overview({
                     index
                   ) => (
                     <tr
-                      key={
-                        index
-                      }
+                      key={index}
                       className="border-t border-white/5"
                     >
                       {columns.map(
@@ -4086,30 +3911,24 @@ function Overview({
 function Issues({
   issues,
 }: {
-  issues:
-    QualityIssue[];
+  issues: QualityIssue[];
 }) {
   return (
     <div className="mt-8">
       <h2 className="text-2xl font-bold">
-        Detected Quality
-        Issues
+        Detected Quality Issues
       </h2>
 
-      {issues.length ===
-      0 ? (
+      {issues.length === 0 ? (
         <div className="mt-6 rounded-xl border border-emerald-400/20 bg-emerald-500/5 p-6 text-emerald-300">
-          ✓ No major
-          issues detected.
+          ✓ No major issues detected.
         </div>
       ) : (
         <div className="mt-6 space-y-4">
           {issues.map(
             (issue) => (
               <div
-                key={
-                  issue.id
-                }
+                key={issue.id}
                 className="rounded-2xl border border-blue-400/15 bg-slate-900/40 p-6"
               >
                 <span
@@ -4117,15 +3936,11 @@ function Issues({
                     issue.severity
                   )}`}
                 >
-                  {
-                    issue.severity
-                  }
+                  {issue.severity}
                 </span>
 
                 <h3 className="mt-4 font-semibold">
-                  {
-                    issue.title
-                  }
+                  {issue.title}
                 </h3>
 
                 <p className="mt-2 text-sm text-gray-400">
@@ -4149,7 +3964,7 @@ function Issues({
 }
 
 /* =========================================================
-   DATA VISUALIZATIONS
+   VISUALIZATIONS
 ========================================================= */
 
 function DataVisuals({
@@ -4158,12 +3973,8 @@ function DataVisuals({
   quality,
 }: {
   rows: DataRow[];
-
-  profiles:
-    ColumnProfile[];
-
-  quality:
-    QualityDimensions;
+  profiles: ColumnProfile[];
+  quality: QualityDimensions;
 }) {
   const qualityData = [
     {
@@ -4202,8 +4013,7 @@ function DataVisuals({
     profiles
       .filter(
         (profile) =>
-          profile.missing >
-          0
+          profile.missing > 0
       )
       .map(
         (profile) => ({
@@ -4244,10 +4054,7 @@ function DataVisuals({
                 ]
               )
           )
-          .slice(
-            0,
-            300
-          )
+          .slice(0, 300)
           .map(
             (row) => ({
               x: toNumber(
@@ -4278,29 +4085,20 @@ function DataVisuals({
           height={300}
         >
           <BarChart
-            data={
-              qualityData
-            }
+            data={qualityData}
             layout="vertical"
           >
             <XAxis
               type="number"
-              domain={[
-                0,
-                100,
-              ]}
-              tick={
-                chartTick
-              }
+              domain={[0, 100]}
+              tick={chartTick}
             />
 
             <YAxis
               type="category"
               dataKey="name"
               width={100}
-              tick={
-                chartTick
-              }
+              tick={chartTick}
             />
 
             <Tooltip
@@ -4327,21 +4125,15 @@ function DataVisuals({
             height={300}
           >
             <BarChart
-              data={
-                missingData
-              }
+              data={missingData}
             >
               <XAxis
                 dataKey="name"
-                tick={
-                  chartTick
-                }
+                tick={chartTick}
               />
 
               <YAxis
-                tick={
-                  chartTick
-                }
+                tick={chartTick}
               />
 
               <Tooltip
@@ -4358,8 +4150,7 @@ function DataVisuals({
           </ResponsiveContainer>
         ) : (
           <div className="flex h-[300px] items-center justify-center text-emerald-300">
-            ✓ No missing
-            values
+            ✓ No missing values
           </div>
         )}
       </ChartCard>
@@ -4378,17 +4169,13 @@ function DataVisuals({
               <XAxis
                 type="number"
                 dataKey="x"
-                tick={
-                  chartTick
-                }
+                tick={chartTick}
               />
 
               <YAxis
                 type="number"
                 dataKey="y"
-                tick={
-                  chartTick
-                }
+                tick={chartTick}
               />
 
               <Tooltip
@@ -4412,7 +4199,7 @@ function DataVisuals({
 }
 
 /* =========================================================
-   GENERIC COMPONENTS
+   QUALITY HEADER
 ========================================================= */
 
 function QualityHeader({
@@ -4424,23 +4211,16 @@ function QualityHeader({
   duplicates,
   issueCount,
 }: {
-  quality:
-    QualityDimensions;
+  quality: QualityDimensions;
 
   rows: number;
   columns: number;
 
-  missingPercent:
-    number;
+  missingPercent: number;
+  totalMissing: number;
 
-  totalMissing:
-    number;
-
-  duplicates:
-    number;
-
-  issueCount:
-    number;
+  duplicates: number;
+  issueCount: number;
 }) {
   const label =
     quality.overall >=
@@ -4455,22 +4235,18 @@ function QualityHeader({
       : "High Risk";
 
   return (
-    <div className="mt-6 rounded-3xl border border-cyan-400/20 bg-cyan-500/5 p-7">
+    <div className="mt-6 rounded-3xl border border-cyan-400/20 bg-cyan-500/5 p-5 sm:p-7">
       <div className="grid gap-8 xl:grid-cols-[300px_1fr] xl:items-center">
         <QualityGauge
-          score={
-            quality.overall
-          }
+          score={quality.overall}
           label={label}
         />
 
         <div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
             <Metric
               label="Rows"
-              value={String(
-                rows
-              )}
+              value={String(rows)}
             />
 
             <Metric
@@ -4497,7 +4273,7 @@ function QualityHeader({
             />
           </div>
 
-          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
             {[
               [
                 "Completeness",
@@ -4530,9 +4306,7 @@ function QualityHeader({
               ]) => (
                 <div
                   key={
-                    String(
-                      name
-                    )
+                    String(name)
                   }
                   className="rounded-xl border border-white/10 p-3"
                 >
@@ -4552,6 +4326,10 @@ function QualityHeader({
     </div>
   );
 }
+
+/* =========================================================
+   QUALITY GAUGE
+========================================================= */
 
 function QualityGauge({
   score,
@@ -4581,8 +4359,7 @@ function QualityGauge({
   return (
     <div className="text-center">
       <div className="text-xs uppercase tracking-[0.2em] text-cyan-300">
-        Data Quality
-        Score
+        Data Quality Score
       </div>
 
       <div className="relative mx-auto h-[160px] w-[240px]">
@@ -4601,9 +4378,7 @@ function QualityGauge({
           <path
             d="M20 110 A90 90 0 0 1 200 110"
             fill="none"
-            stroke={
-              color
-            }
+            stroke={color}
             strokeWidth="18"
             strokeLinecap="round"
             strokeDasharray={`${progress} ${total}`}
@@ -4612,6 +4387,7 @@ function QualityGauge({
 
         <div className="absolute inset-x-0 bottom-0 text-5xl font-bold">
           {score}
+
           <span className="text-xl text-gray-500">
             /100
           </span>
@@ -4625,6 +4401,10 @@ function QualityGauge({
   );
 }
 
+/* =========================================================
+   FILE HEADER
+========================================================= */
+
 function FileHeader({
   title,
   name,
@@ -4636,20 +4416,17 @@ function FileHeader({
   name: string;
   size: string;
 
-  onAnother:
-    () => void;
-
-  onClear:
-    () => void;
+  onAnother: () => void;
+  onClear: () => void;
 }) {
   return (
     <div className="flex flex-col gap-5 rounded-3xl border border-blue-400/20 bg-slate-900/40 p-6 md:flex-row md:items-center md:justify-between">
-      <div>
+      <div className="min-w-0">
         <div className="text-xs uppercase tracking-[0.2em] text-cyan-300">
           {title}
         </div>
 
-        <h2 className="mt-2 text-xl font-bold">
+        <h2 className="mt-2 break-words text-xl font-bold">
           {name}
         </h2>
 
@@ -4658,23 +4435,18 @@ function FileHeader({
         </p>
       </div>
 
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         <button
           type="button"
-          onClick={
-            onAnother
-          }
+          onClick={onAnother}
           className="rounded-xl border border-blue-400/30 px-4 py-2 text-sm text-blue-300"
         >
-          Analyze Another
-          File
+          Analyze Another File
         </button>
 
         <button
           type="button"
-          onClick={
-            onClear
-          }
+          onClick={onClear}
           className="rounded-xl border border-white/10 px-4 py-2 text-sm text-gray-400"
         >
           Clear
@@ -4683,6 +4455,10 @@ function FileHeader({
     </div>
   );
 }
+
+/* =========================================================
+   METRIC
+========================================================= */
 
 function Metric({
   label,
@@ -4694,12 +4470,12 @@ function Metric({
   helper?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-blue-400/15 bg-slate-950/40 p-5">
+    <div className="rounded-2xl border border-blue-400/15 bg-slate-950/40 p-4 sm:p-5">
       <div className="text-xs uppercase tracking-[0.15em] text-gray-500">
         {label}
       </div>
 
-      <div className="mt-2 text-2xl font-bold">
+      <div className="mt-2 text-xl font-bold sm:text-2xl">
         {value}
       </div>
 
@@ -4712,6 +4488,10 @@ function Metric({
   );
 }
 
+/* =========================================================
+   CHART CARD
+========================================================= */
+
 function ChartCard({
   title,
   subtitle,
@@ -4719,12 +4499,10 @@ function ChartCard({
 }: {
   title: string;
   subtitle: string;
-
-  children:
-    React.ReactNode;
+  children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-3xl border border-blue-400/15 bg-slate-900/40 p-6">
+    <div className="min-w-0 rounded-3xl border border-blue-400/15 bg-slate-900/40 p-4 sm:p-6">
       <h3 className="text-lg font-semibold">
         {title}
       </h3>
@@ -4733,38 +4511,38 @@ function ChartCard({
         {subtitle}
       </p>
 
-      <div className="mt-6">
+      <div className="mt-6 min-w-0">
         {children}
       </div>
     </div>
   );
 }
 
+/* =========================================================
+   PRIVACY
+========================================================= */
+
 function Privacy() {
   return (
     <div className="mt-10 rounded-2xl border border-emerald-400/15 bg-emerald-500/5 p-5">
       <h3 className="font-semibold text-emerald-300">
-        🔒 Privacy &
-        Processing
+        🔒 Privacy & Processing
       </h3>
 
       <p className="mt-2 text-sm leading-6 text-gray-400">
-        File parsing,
-        profiling, scoring
-        and visualization
-        run in the browser.
-        When you explicitly
-        use an AI feature,
-        DataLens sends a
-        limited profile,
-        small dataset sample,
-        or relevant document
-        excerpt to the
-        server-side AI API.
+        File parsing, profiling, deterministic scoring and visualizations run
+        in the browser. When you explicitly use an AI feature, DataLens sends
+        a limited analysis profile, small dataset sample, or relevant document
+        excerpt to the server-side AI API. The full raw CSV or Excel file is
+        not sent by this implementation.
       </p>
     </div>
   );
 }
+
+/* =========================================================
+   ERROR
+========================================================= */
 
 function ErrorBox({
   text,
@@ -4772,11 +4550,15 @@ function ErrorBox({
   text: string;
 }) {
   return (
-    <div className="mt-5 rounded-xl border border-red-400/30 bg-red-500/10 p-4 text-sm text-red-300">
+    <div className="mt-5 break-words rounded-xl border border-red-400/30 bg-red-500/10 p-4 text-sm text-red-300">
       {text}
     </div>
   );
 }
+
+/* =========================================================
+   STYLE HELPERS
+========================================================= */
 
 function severityClass(
   severity: Severity
@@ -4788,8 +4570,7 @@ function severityClass(
   }
 
   if (
-    severity ===
-    "Medium"
+    severity === "Medium"
   ) {
     return "border-amber-400/30 bg-amber-500/10 text-amber-300";
   }

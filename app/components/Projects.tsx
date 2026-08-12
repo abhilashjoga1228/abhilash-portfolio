@@ -5,6 +5,49 @@ export default function Projects() {
     {
       featured: true,
 
+      category: "AI / DATA INTELLIGENCE",
+
+      title: "DataLens AI",
+
+      logo: "/Logos/OPENAI.png",
+
+      description:
+        "Interactive data and document intelligence platform for CSV, Excel, and PDF files with automated profiling, quality scoring, anomaly detection, visualization, document search, and AbhI Analyst for AI-powered Q&A and SQL/Python remediation.",
+
+      architecture: [
+        "CSV / Excel / PDF",
+        "Browser Analysis",
+        "Quality Engine",
+        "Visualization",
+        "AbhI Analyst",
+      ],
+
+      technologies: [
+        "Next.js",
+        "TypeScript",
+        "OpenAI API",
+        "Papa Parse",
+        "SheetJS",
+        "PDF.js",
+        "Recharts",
+      ],
+
+      impact: [
+        "Interactive CSV and multi-sheet Excel analysis",
+        "Automated profiling and data-quality scoring",
+        "Anomaly, duplicate, missing-value, and validity detection",
+        "PDF extraction, search, and document intelligence",
+        "AI-powered SQL and Python remediation generation",
+      ],
+
+      caseStudy: "/projects/data-quality-analyzer",
+
+      buttonLabel: "Try DataLens AI →",
+    },
+
+    {
+      featured: false,
+
       category: "DATA ENGINEERING",
 
       title: "Delivery Standardization & Cost Optimization Platform",
@@ -41,6 +84,8 @@ export default function Projects() {
 
       github:
         "https://github.com/abhilashjoga1228/Delivery-Standardization-Cost-Optimization-Platform",
+
+      buttonLabel: "View Case Study →",
     },
 
     {
@@ -80,6 +125,8 @@ export default function Projects() {
       ],
 
       caseStudy: "/projects/cloud-data-migration",
+
+      buttonLabel: "View Case Study →",
     },
 
     {
@@ -89,7 +136,7 @@ export default function Projects() {
 
       title: "AI-Powered Analytics Assistant",
 
-      logo: "/Logos/python.png",
+      logo: "/Logos/OPENAI.png",
 
       description:
         "Interactive AI portfolio assistant combining context-grounded OpenAI responses, job-description analysis, and Google Calendar scheduling through a production-style Next.js application.",
@@ -120,6 +167,8 @@ export default function Projects() {
       ],
 
       caseStudy: "/projects/ai-analytics-assistant",
+
+      buttonLabel: "View Case Study →",
     },
 
     {
@@ -160,6 +209,8 @@ export default function Projects() {
       ],
 
       caseStudy: "/projects/bi-platform-modernization",
+
+      buttonLabel: "View Case Study →",
     },
   ];
 
@@ -254,11 +305,9 @@ export default function Projects() {
 
               {/* Architecture */}
               <div className="relative mt-7">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-400">
-                    Architecture
-                  </h4>
-                </div>
+                <h4 className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-400">
+                  Architecture
+                </h4>
 
                 <div className="mt-4 flex flex-wrap items-center gap-2">
                   {project.architecture.map((step, index) => (
@@ -320,7 +369,7 @@ export default function Projects() {
                 </ul>
               </div>
 
-              {/* Spacer keeps buttons aligned */}
+              {/* Spacer */}
               <div className="flex-1" />
 
               {/* Buttons */}
@@ -329,7 +378,7 @@ export default function Projects() {
                   href={project.caseStudy}
                   className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-500"
                 >
-                  View Case Study →
+                  {project.buttonLabel}
                 </a>
 
                 {project.github && (

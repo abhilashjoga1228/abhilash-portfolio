@@ -36,7 +36,7 @@ export default function Navbar() {
   return (
     <nav className="fixed left-0 right-0 top-0 z-50 border-b border-blue-400/10 bg-slate-950/85 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        {/* Name / Brand */}
+        {/* Brand */}
         <a
           href="#home"
           onClick={() => setOpen(false)}

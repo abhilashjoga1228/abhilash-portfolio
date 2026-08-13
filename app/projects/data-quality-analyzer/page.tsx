@@ -1635,18 +1635,10 @@ function topTerms(text: string) {
 async function readPdf(
   file: File
 ): Promise<PdfAnalysis> {
-  const pdfjs =
-    await import(
-      "pdfjs-dist"
-    );
+  const pdfjs = await import(
+    "pdfjs-dist/legacy/build/pdf.mjs"
+  );
 
-  /*
-    IMPORTANT:
-    Worker is now hosted locally from /public.
-
-    This avoids cross-origin worker problems
-    on Safari / iPhone.
-  */
   pdfjs.GlobalWorkerOptions.workerSrc =
     "/pdf.worker.min.mjs";
 
@@ -1655,10 +1647,9 @@ async function readPdf(
 
   const loadingTask =
     pdfjs.getDocument({
-      data:
-        new Uint8Array(
-          arrayBuffer
-        ),
+      data: new Uint8Array(
+        arrayBuffer
+      ),
     });
 
   const document =
@@ -1672,8 +1663,7 @@ async function readPdf(
 
   for (
     let pageNumber = 1;
-    pageNumber <=
-    document.numPages;
+    pageNumber <= document.numPages;
     pageNumber++
   ) {
     const page =
@@ -1681,21 +1671,70 @@ async function readPdf(
         pageNumber
       );
 
-    const content =
-      await page.getTextContent();
+    /*
+      IMPORTANT:
+      Do NOT use page.getTextContent() here.
 
-    const text =
-      content.items
+      Some iPhone Safari versions fail because PDF.js
+      internally iterates a ReadableStream.
+
+      We consume the stream directly with getReader().
+    */
+    const textStream =
+      page.streamTextContent();
+
+    const reader =
+      textStream.getReader();
+
+    const items:
+      unknown[] = [];
+
+    while (true) {
+      const result =
+        await reader.read();
+
+      if (result.done) {
+        break;
+      }
+
+      const value =
+        result.value as
+          | {
+              items?: unknown[];
+            }
+          | undefined;
+
+      if (
+        value &&
+        Array.isArray(
+          value.items
+        )
+      ) {
+        items.push(
+          ...value.items
+        );
+      }
+    }
+
+    const pageText =
+      items
         .map((item) => {
           if (
-            typeof item ===
-              "object" &&
+            typeof item === "object" &&
             item !== null &&
-            "str" in item &&
-            typeof item.str ===
-              "string"
+            "str" in item
           ) {
-            return item.str;
+            const textItem =
+              item as {
+                str?: unknown;
+              };
+
+            if (
+              typeof textItem.str ===
+              "string"
+            ) {
+              return textItem.str;
+            }
           }
 
           return "";
@@ -1705,21 +1744,21 @@ async function readPdf(
         .trim();
 
     pages.push({
-      page:
-        pageNumber,
+      page: pageNumber,
 
-      text,
+      text: pageText,
 
-      words:
-        text
-          ? text
-              .split(/\s+/)
-              .filter(Boolean)
-              .length
-          : 0,
+      words: pageText
+        ? pageText
+            .split(/\s+/)
+            .filter(Boolean)
+            .length
+        : 0,
     });
 
-    fullText.push(text);
+    fullText.push(
+      pageText
+    );
   }
 
   const text =
@@ -1728,9 +1767,7 @@ async function readPdf(
       .trim();
 
   const sentenceMatches =
-    text.match(
-      /[.!?]+/g
-    );
+    text.match(/[.!?]+/g);
 
   return {
     fileName:
@@ -1762,7 +1799,8 @@ async function readPdf(
         ? sentenceMatches.length
         : 0,
 
-    pageData: pages,
+    pageData:
+      pages,
 
     topTerms:
       topTerms(text),

@@ -1,72 +1,47 @@
 @import "tailwindcss";
 
-
 :root {
-
   --background: #020617;
-
   --foreground: #f8fafc;
-
 }
-
-
 
 html {
-
   scroll-behavior: smooth;
-
 }
-
-
 
 body {
-
   background:
-
-  radial-gradient(
-    circle at top,
-    rgba(59,130,246,0.15),
-    transparent 40%
-  ),
-
-  #020617;
+    radial-gradient(
+      circle at top,
+      rgba(59, 130, 246, 0.15),
+      transparent 40%
+    ),
+    #020617;
 
   color: var(--foreground);
-
 }
-
-
 
 /* Glass Card Style */
 
 .glass-card {
-
-  background: rgba(15,23,42,0.55);
-
+  background: rgba(15, 23, 42, 0.55);
   backdrop-filter: blur(16px);
-
-  border: 1px solid rgba(59,130,246,0.3);
-
+  border: 1px solid rgba(59, 130, 246, 0.3);
   box-shadow:
-  0 0 40px rgba(59,130,246,0.08);
-
+    0 0 40px rgba(59, 130, 246, 0.08);
 }
-
-
 
 /* Blue Cyan Gradient Text */
 
 .gradient-text {
-
   background:
-  linear-gradient(
-    90deg,
-    #60a5fa,
-    #22d3ee
-  );
+    linear-gradient(
+      90deg,
+      #60a5fa,
+      #22d3ee
+    );
 
-  -webkit-background-clip:text;
-
-  color:transparent;
-
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }

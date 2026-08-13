@@ -144,7 +144,7 @@ export default function About() {
                 My career has evolved across analytics, business intelligence,
                 data engineering, and cloud platform modernization. That
                 progression has given me experience across the full analytics
-                lifecycle—from understanding business questions to engineering
+                lifecycle from understanding business questions to engineering
                 the data foundations that support reporting and decision-making.
               </p>
 

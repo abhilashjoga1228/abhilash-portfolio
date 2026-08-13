@@ -2,81 +2,6 @@
 
 import { motion } from "framer-motion";
 
-const nodes = [
-  {
-    name: "Swire Coca-Cola",
-    logo: "/Logos/swire.jpg",
-    position: "top-[10%] left-[8%]",
-    size: "h-12 w-12",
-  },
-  {
-    name: "Microsoft Fabric",
-    logo: "/Logos/fabric.png",
-    position: "top-[12%] left-[30%]",
-    size: "h-12 w-12",
-  },
-  {
-    name: "SQL",
-    logo: "/Logos/sql.png",
-    position: "top-[18%] right-[45%]",
-    size: "h-10 w-10",
-  },
-  {
-    name: "Azure",
-    logo: "/Logos/azure.png",
-    position: "top-[35%] left-[8%]",
-    size: "h-10 w-10",
-  },
-  {
-    name: "Databricks",
-    logo: "/Logos/databricks.png",
-    position: "top-[22%] right-[10%]",
-    size: "h-10 w-10",
-  },
-  {
-    name: "Adobe",
-    logo: "/Logos/adobe.png",
-    position: "top-[55%] right-[12%]",
-    size: "h-14 w-14",
-  },
-  {
-    name: "Amazon",
-    logo: "/Logos/amazon.png",
-    position: "bottom-[28%] left-[5%]",
-    size: "h-14 w-14",
-  },
-  {
-    name: "Snowflake",
-    logo: "/Logos/snowflake.png",
-    position: "bottom-[0%] left-[28%]",
-    size: "h-12 w-12",
-  },
-  {
-    name: "Power BI",
-    logo: "/Logos/powerbi.png",
-    position: "top-[15%] right-[28%]",
-    size: "h-14 w-14",
-  },
-  {
-    name: "Power Platform",
-    logo: "/Logos/powerplatform.png",
-    position: "bottom-[12%] left-[48%]",
-    size: "h-12 w-12",
-  },
-  {
-    name: "Python",
-    logo: "/Logos/python.png",
-    position: "bottom-[15%] left-[10%]",
-    size: "h-10 w-10",
-  },
-  {
-    name: "SAP",
-    logo: "/Logos/sap.png",
-    position: "bottom-[5%] right-[25%]",
-    size: "h-12 w-12",
-  },
-];
-
 const particles = [
   [10, 20],
   [25, 70],
@@ -102,22 +27,23 @@ const particles = [
 
 export default function AnimatedBackground() {
   return (
-    <div className="absolute inset-0 overflow-hidden">
-      {/* Background Grid */}
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {/* Grid */}
       <div
         className="
           absolute
           inset-0
-          bg-[linear-gradient(rgba(59,130,246,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.025)_1px,transparent_1px)]
+          bg-[linear-gradient(rgba(59,130,246,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.035)_1px,transparent_1px)]
           bg-[size:80px_80px]
+          dark:bg-[linear-gradient(rgba(59,130,246,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.025)_1px,transparent_1px)]
         "
       />
 
-      {/* Main AI/Data Glow */}
+      {/* Main glow */}
       <motion.div
         animate={{
-          scale: [1, 1.15, 1],
-          opacity: [0.2, 0.4, 0.2],
+          scale: [1, 1.12, 1],
+          opacity: [0.18, 0.32, 0.18],
         }}
         transition={{
           duration: 12,
@@ -127,100 +53,64 @@ export default function AnimatedBackground() {
         className="
           absolute
           left-1/2
-          top-1/2
-          h-[600px]
-          w-[600px]
+          top-[42%]
+          h-[560px]
+          w-[560px]
           -translate-x-1/2
           -translate-y-1/2
           rounded-full
-          bg-blue-600/20
-          blur-[160px]
+          bg-blue-400/15
+          blur-[150px]
+          dark:bg-blue-600/20
         "
       />
 
-      {/* Floating Technology Logos */}
-      {nodes.map((node, index) => (
-        <motion.div
-          key={node.name}
-          animate={{
-            y: [0, -40, 0, 25, 0],
-            x: [0, 20, -15, 10, 0],
-            scale: [1, 1.06, 1],
-            opacity: [0.7, 1, 0.7],
-          }}
-          transition={{
-            duration: 5 + (index % 3),
-            repeat: Infinity,
-            delay: index * 0.2,
-            ease: "easeInOut",
-          }}
-          className={`
-            absolute
-            ${node.position}
-            group
-            hidden
-            flex-col
-            items-center
-            gap-2
-            md:flex
-          `}
-        >
-          <div
-            className="
-              rounded-2xl
-              border
-              border-blue-400/30
-              bg-slate-950/80
-              p-4
-              backdrop-blur-xl
-              shadow-[0_0_35px_rgba(59,130,246,0.35)]
-            "
-          >
-            <img
-              src={node.logo}
-              alt={node.name}
-              className={`
-                ${node.size}
-                rounded-xl
-                object-contain
-              `}
-            />
-          </div>
+      {/* Secondary glow */}
+      <motion.div
+        animate={{
+          x: [0, 40, 0],
+          y: [0, -30, 0],
+          opacity: [0.08, 0.18, 0.08],
+        }}
+        transition={{
+          duration: 16,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+        className="
+          absolute
+          right-[10%]
+          top-[20%]
+          h-[320px]
+          w-[320px]
+          rounded-full
+          bg-cyan-300/10
+          blur-[120px]
+          dark:bg-cyan-500/10
+        "
+      />
 
-          <span
-            className="
-              text-xs
-              text-blue-300
-              opacity-70
-              transition
-              group-hover:text-cyan-300
-            "
-          >
-            {node.name}
-          </span>
-        </motion.div>
-      ))}
-
-      {/* Floating Data Particles */}
+      {/* Floating particles */}
       {particles.map((position, index) => (
         <motion.div
           key={index}
           animate={{
-            y: [0, -120, 0],
-            opacity: [0.1, 0.8, 0.1],
+            y: [0, -80, 0],
+            opacity: [0.08, 0.45, 0.08],
           }}
           transition={{
-            duration: 5 + (index % 5),
+            duration: 6 + (index % 5),
             repeat: Infinity,
             delay: index * 0.2,
             ease: "easeInOut",
           }}
           className="
             absolute
-            h-1.5
-            w-1.5
+            h-1
+            w-1
             rounded-full
-            bg-cyan-400
+            bg-blue-500/50
+            dark:bg-cyan-400/60
           "
           style={{
             left: `${position[0]}%`,

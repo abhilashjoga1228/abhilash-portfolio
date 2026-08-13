@@ -22,7 +22,7 @@ export default function MyStory() {
               <p className="mt-4 max-w-2xl leading-7 text-gray-400">
                 From starting my career as a fresh graduate, to discovering
                 analytics at Amazon, moving to the U.S. for my master&apos;s,
-                and finding my path into data engineering — every chapter
+                and finding my path into data engineering every chapter
                 changed what came next.
               </p>
 

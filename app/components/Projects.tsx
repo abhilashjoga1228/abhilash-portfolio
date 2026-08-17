@@ -5,6 +5,52 @@ export default function Projects() {
     {
       featured: true,
 
+      category: "AI / DECISION INTELLIGENCE",
+
+      title: "Round Table AI",
+
+      logo: "/Logos/OPENAI.png",
+
+      description:
+        "AI-powered decision intelligence platform that stress-tests complex decisions through independent expert analysis, structured debate, evolving verdicts, and actionable recommendations.",
+
+      architecture: [
+        "User Decision",
+        "AI Experts",
+        "Expert Debate",
+        "Verdict Synthesis",
+        "Decision Memory",
+        "Share / PDF",
+      ],
+
+      technologies: [
+        "Next.js",
+        "TypeScript",
+        "OpenAI API",
+        "Supabase",
+        "PostgreSQL",
+        "Vercel",
+      ],
+
+      impact: [
+        "Dynamically assembles multiple AI perspectives around a decision",
+        "Synthesizes independent expert reasoning into one actionable verdict",
+        "Supports challenges, follow-up questions, and additional perspectives",
+        "Persists decision history with secure cross-device access",
+        "Generates public share links and branded PDF decision briefs",
+      ],
+
+      caseStudy:
+        "https://roundtable.abhilashjoga.com",
+
+      buttonLabel: "Try Round Table AI →",
+
+      external: true,
+    },
+
+    {
+      featured: false,
+
       category: "AI / DATA INTELLIGENCE",
 
       title: "DataLens AI",
@@ -81,9 +127,6 @@ export default function Projects() {
       ],
 
       caseStudy: "/projects/delivery-standardization",
-
-      github:
-        "https://github.com/abhilashjoga1228/Delivery-Standardization-Cost-Optimization-Platform",
 
       buttonLabel: "View Case Study →",
     },
@@ -376,21 +419,12 @@ export default function Projects() {
               <div className="relative mt-8 flex flex-wrap gap-3 border-t border-blue-400/10 pt-6">
                 <a
                   href={project.caseStudy}
+                  target={project.external ? "_blank" : undefined}
+                  rel={project.external ? "noopener noreferrer" : undefined}
                   className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-500"
                 >
                   {project.buttonLabel}
                 </a>
-
-                {project.github && (
-                  <a
-                    href={project.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rounded-xl border border-gray-600 px-5 py-2.5 text-sm font-semibold text-gray-200 transition hover:border-gray-400 hover:bg-slate-800"
-                  >
-                    GitHub ↗
-                  </a>
-                )}
               </div>
             </article>
           ))}

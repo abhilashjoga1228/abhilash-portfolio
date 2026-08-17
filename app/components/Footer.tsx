@@ -31,15 +31,6 @@ export default function Footer() {
           >
             Mobile
           </a>
-
-          <a
-            href="https://github.com/abhilashjoga1228"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-400 transition hover:text-cyan-300"
-          >
-            GitHub
-          </a>
         </div>
       </div>
     </footer>

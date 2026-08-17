@@ -313,14 +313,6 @@ export default function Home() {
                     Mobile
                   </a>
 
-                  <a
-                    href="https://github.com/abhilashjoga1228"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rounded-xl border border-blue-400/40 px-6 py-3 font-semibold text-blue-300 transition hover:border-cyan-400/60 hover:bg-blue-500/10"
-                  >
-                    GitHub
-                  </a>
                 </div>
 
                 <div className="mt-8 border-t border-blue-400/10 pt-6">

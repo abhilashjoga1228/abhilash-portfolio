@@ -33,6 +33,32 @@ const links = [
 export default function Navbar() {
   const [open, setOpen] = useState(false);
 
+  const trackResumeClick = () => {
+    if (typeof window === "undefined") return;
+
+    const gtag = (
+      window as typeof window & {
+        gtag?: (
+          command: string,
+          eventName: string,
+          params?: Record<string, string>
+        ) => void;
+      }
+    ).gtag;
+
+    if (typeof gtag === "function") {
+      gtag("event", "resume_click", {
+        location: "mobile_navbar",
+        destination: "/Abhilash_Joga_Resume.pdf",
+      });
+    }
+  };
+
+  const handleResumeClick = () => {
+    trackResumeClick();
+    setOpen(false);
+  };
+
   return (
     <nav className="fixed left-0 right-0 top-0 z-50 border-b border-blue-400/10 bg-slate-950/85 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
@@ -90,7 +116,7 @@ export default function Navbar() {
             href="/Abhilash_Joga_Resume.pdf"
             target="_blank"
             rel="noopener noreferrer"
-            onClick={() => setOpen(false)}
+            onClick={handleResumeClick}
             className="mt-5 block rounded-xl bg-blue-600 px-5 py-3 text-center text-sm font-semibold text-white transition hover:bg-blue-500"
           >
             View Resume

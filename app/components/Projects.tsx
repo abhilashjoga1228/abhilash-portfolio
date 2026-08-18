@@ -1,6 +1,30 @@
 "use client";
 
 export default function Projects() {
+  const trackProjectClick = (
+    projectTitle: string,
+    destination: string
+  ) => {
+    if (typeof window === "undefined") return;
+
+    const gtag = (
+      window as typeof window & {
+        gtag?: (
+          command: string,
+          eventName: string,
+          params?: Record<string, string>
+        ) => void;
+      }
+    ).gtag;
+
+    if (typeof gtag === "function") {
+      gtag("event", "project_click", {
+        project_name: projectTitle,
+        destination,
+      });
+    }
+  };
+
   const projects = [
     {
       featured: true,
@@ -421,6 +445,12 @@ export default function Projects() {
                   href={project.caseStudy}
                   target={project.external ? "_blank" : undefined}
                   rel={project.external ? "noopener noreferrer" : undefined}
+                  onClick={() =>
+                    trackProjectClick(
+                      project.title,
+                      project.caseStudy
+                    )
+                  }
                   className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-500"
                 >
                   {project.buttonLabel}

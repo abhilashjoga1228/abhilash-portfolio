@@ -197,6 +197,27 @@ function isSkipValue(value: string) {
 }
 
 export default function ChatBot() {
+  function trackEvent(
+    eventName: string,
+    params: Record<string, string> = {}
+  ) {
+    if (typeof window === "undefined") return;
+
+    const gtag = (
+      window as typeof window & {
+        gtag?: (
+          command: string,
+          eventName: string,
+          params?: Record<string, string>
+        ) => void;
+      }
+    ).gtag;
+
+    if (typeof gtag === "function") {
+      gtag("event", eventName, params);
+    }
+  }
+
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [input, setInput] = useState("");
@@ -323,6 +344,10 @@ Choose a quick action above or ask me anything about Abhilash.`,
   }
 
   function startScheduling() {
+    trackEvent("meeting_schedule_start", {
+      location: "chatbot",
+    });
+
     setAvailableSlots([]);
     setBooking(initialBooking);
     resetCalendarToCurrentMonth();
@@ -671,6 +696,11 @@ Please select another date from the calendar and I'll check again.`);
 
         return;
       }
+
+      trackEvent("meeting_scheduled", {
+        location: "chatbot",
+        duration: "30_minutes",
+      });
 
       const meetLink =
         data.meeting
@@ -1163,9 +1193,12 @@ Would you like me to check availability?`);
     <>
       {!open && (
         <button
-          onClick={() =>
-            setOpen(true)
-          }
+          onClick={() => {
+            trackEvent("chatbot_open", {
+              location: "floating_button",
+            });
+            setOpen(true);
+          }}
           className="
             fixed
             bottom-6
@@ -1872,6 +1905,12 @@ Would you like me to check availability?`);
               href="/Abhilash_Joga_Resume.pdf"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() =>
+                trackEvent("resume_click", {
+                  location: "chatbot",
+                  destination: "/Abhilash_Joga_Resume.pdf",
+                })
+              }
               className="
                 rounded-lg
                 bg-blue-600
@@ -1888,6 +1927,13 @@ Would you like me to check availability?`);
               href="https://www.linkedin.com/in/jogaabhilash/"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() =>
+                trackEvent("linkedin_click", {
+                  location: "chatbot",
+                  destination:
+                    "https://www.linkedin.com/in/jogaabhilash/",
+                })
+              }
               className="
                 rounded-lg
                 border
@@ -1903,6 +1949,12 @@ Would you like me to check availability?`);
 
             <a
               href="mailto:abhilashjoga1028@gmail.com"
+              onClick={() =>
+                trackEvent("email_click", {
+                  location: "chatbot",
+                  destination: "mailto",
+                })
+              }
               className="
                 rounded-lg
                 border

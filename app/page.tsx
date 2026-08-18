@@ -8,6 +8,7 @@ import AnimatedBackground from "./components/AnimatedBackground";
 import Impact from "./components/Impact";
 import ChatBot from "./components/ChatBot";
 import MyStory from "./components/MyStory";
+import TrackedLink from "./components/TrackedLink";
 
 const experienceCompanies = [
   {
@@ -116,23 +117,29 @@ export default function Home() {
                   View Projects
                 </a>
 
-                <a
+                <TrackedLink
                   href="/Abhilash_Joga_Resume.pdf"
+                  eventName="resume_click"
+                  location="hero"
+                  label="View Resume"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="rounded-xl border border-blue-400/40 px-6 py-3 font-semibold text-blue-300 transition hover:border-cyan-400/60 hover:bg-blue-500/10"
                 >
                   View Resume
-                </a>
+                </TrackedLink>
 
-                <a
+                <TrackedLink
                   href="https://www.linkedin.com/in/jogaabhilash/"
+                  eventName="linkedin_click"
+                  location="hero"
+                  label="LinkedIn"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="rounded-xl border border-blue-400/40 px-6 py-3 font-semibold text-blue-300 transition hover:border-cyan-400/60 hover:bg-blue-500/10"
                 >
                   LinkedIn
-                </a>
+                </TrackedLink>
               </div>
             </div>
 
@@ -290,29 +297,37 @@ export default function Home() {
                 </p>
 
                 <div className="mt-8 flex flex-wrap justify-center gap-4">
-                  <a
+                  <TrackedLink
                     href="https://www.linkedin.com/in/jogaabhilash/"
+                    eventName="linkedin_click"
+                    location="contact"
+                    label="LinkedIn"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-500"
                   >
                     LinkedIn
-                  </a>
+                  </TrackedLink>
 
-                  <a
+                  <TrackedLink
                     href="mailto:abhilashjoga1028@gmail.com"
+                    eventName="email_click"
+                    location="contact"
+                    label="Email"
                     className="rounded-xl border border-blue-400/40 px-6 py-3 font-semibold text-blue-300 transition hover:border-cyan-400/60 hover:bg-blue-500/10"
                   >
                     Email
-                  </a>
+                  </TrackedLink>
 
-                  <a
+                  <TrackedLink
                     href="tel:+13854613687"
+                    eventName="mobile_click"
+                    location="contact"
+                    label="Mobile"
                     className="rounded-xl border border-blue-400/40 px-6 py-3 font-semibold text-blue-300 transition hover:border-cyan-400/60 hover:bg-blue-500/10"
                   >
                     Mobile
-                  </a>
-
+                  </TrackedLink>
                 </div>
 
                 <div className="mt-8 border-t border-blue-400/10 pt-6">
